@@ -9,9 +9,44 @@
     }
 }
 
+.classic-hero-image img {
+    max-width: 100%;
+    max-height: 1000px;
+    height: auto;
+    width: auto;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.classic-hero-image img:hover {
+    transform: scale(1.05);
+}
+
+.hero-image-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+}
+
+.hero-image-shadow:hover {
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5), 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+}
+
 .hero {
+    background: linear-gradient(180deg, #2096f357, transparent);
     background-size: cover;
-    padding-top: 70px;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+// Reduce spacing between sections on landing page
+#content {
+    margin-bottom: 0 !important;
+}
+
+#features {
+    margin-top: 0;
+}
+
+#features .container {
+    margin-top: 0 !important;
 }
 
 // Hide the top navigation bar on landing page

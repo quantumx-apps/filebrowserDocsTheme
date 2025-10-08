@@ -1,10 +1,22 @@
+html {
+    min-height: 100vh;
+}
+
 body {
     font-family: $font-family-secondary;
     overflow-x: hidden !important;
     font-size: $font-size-base;
     color: $body-color;
     background-color: $body-bg;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+#content {
+    flex: 1;
+}
+
 @media (max-width: 1199px) {
     html {
         scroll-padding-top: 80px;

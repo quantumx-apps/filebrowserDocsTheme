@@ -133,6 +133,7 @@
     }
 }
 
+// Overlay background
 #FlexSearchCollapse {
     position: fixed;
     top: 0;
@@ -144,30 +145,70 @@
     padding: 0;
     width: 100vw;
     height: 100vh;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.3s ease;
+    display: none;
+    pointer-events: none;
+
+    &.show {
+        display: block;
+        background-color: rgba(0, 0, 0, 0.5);
+        pointer-events: auto;
+    }
+
+    &.collapsing {
+        display: block;
+    }
+}
+
+// Search container - just a simple wrapper for positioning
+// NOT full-screen, just holds the search box at the top
+#FlexSearchContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1002;
+    margin: 0;
+    padding: 0;
+    display: none;
+    pointer-events: none; // Container doesn't block clicks
+
+    &.show {
+        display: block;
+    }
+
+    &.collapsing {
+        display: block;
+    }
+
+    // Only the search box itself should receive clicks
+    .flexsearch-container {
+        pointer-events: auto;
+    }
 }
 
 // Fixed position search button
+// Must be above overlay (1001) and search container (1002)
 .fixed-search-button {
     position: fixed;
     top: 0.75em;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1001;
+    z-index: 1003; // Above overlay and container
     margin: 0;
     padding: 0;
-
 }
 
-// Hide the search button when overlay is active
-body.search-overlay-active #flexsearch-button {
-    opacity: 0;
-    pointer-events: none;
+// Hide search button when search is active
+body.search-overlay-active .fixed-search-button {
+    display: none;
 }
 
 // Larger search button styling
 .search-button-large {
     min-width: 30em;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.7em;
     border-radius: 1em;
     background-color: rgba(255, 255, 255, 0.231);
     border: none;
@@ -222,11 +263,11 @@ body.search-overlay-active #flexsearch-button {
 }
 
 .flexsearch-container {
-    position: fixed ;
-    top: 0.5em;
+    position: fixed;
+    top: 0.75em;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1002;
+    z-index: 1003;
     opacity: 1;
     margin: 0;
     padding: 0;
@@ -280,7 +321,7 @@ body.search-overlay-active #flexsearch-button {
         align-items: center;
         background-color: rgba(255, 255, 255, 0.231);
         border-radius: 1em;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.7em;
         height: auto;
         border: none;
         min-width: 30em;
@@ -322,7 +363,7 @@ body.search-overlay-active #flexsearch-button {
         border: none;
         border-radius: 0;
         font-size: 1rem;
-        padding: 0 0 0 2.5rem; // Add left padding to account for search icon
+        padding: 0 0 0 0.5em; // Add left padding to account for search icon
         color: white;
         position: relative;
         width: 100%;
@@ -340,6 +381,15 @@ body.search-overlay-active #flexsearch-button {
         &::placeholder {
             color: lightgray;
             font-weight: 400;
+        }
+
+        // Hide browser's default search input clear button
+        &::-webkit-search-cancel-button {
+            display: none;
+        }
+
+        &::-webkit-search-decoration {
+            display: none;
         }
     }
 
@@ -437,7 +487,6 @@ body.search-overlay-active #flexsearch-button {
     display: flex;
     height: 40px;
     padding: 0 12px;
-    margin: 0 0 0 16px;
     font-weight: 500;
     align-items: center;
     justify-content: start;
@@ -577,20 +626,7 @@ body.search-overlay-active #flexsearch-button {
     padding-left: 0;
 }
 
-// Cancel button styling
-#hideFlexsearch {
-    background-color: var(--gray-100);
-    border: 1px solid var(--flexsearch-input-border-color);
-    color: var(--text-default);
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-
-    &:hover {
-        background-color: var(--gray-200);
-        border-color: var(--gray-400);
-    }
-}
+// Cancel button styling removed - using icon-only styling from above
 
 
 #suggestions a {

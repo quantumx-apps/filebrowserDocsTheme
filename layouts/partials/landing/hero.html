@@ -24,7 +24,7 @@
             }
         </style>
 {{ end }}
-<section id="{{ $sectionTitle }}" class="d-table w-100 overflow-hidden hero">
+<section id="{{ $sectionTitle }}" class="overflow-hidden hero">
     <div class="container">
         <div class="row mt-5 align-items-center">
 
@@ -68,9 +68,19 @@
 
                     <div class="mt-3">
                         {{ with .ctaButton }}
-                            <a href="{{ relLangURL .url }}" class="btn btn-lg btn-primary me-2 mt-2">
+                            {{ $color := .color | default "primary" }}
+                            {{ $outline := .outline | default false }}
+                            <a href="{{ relLangURL .url }}" class="btn btn-lg {{ if $outline }}btn-outline-{{ else }}btn-{{ end }}{{ $color }} me-2 mt-2">
                                 {{ with .icon }}
-                                    <span class="material-icons align-middle">{{ . }}</span>
+                                    {{ $svgIcons := slice "github" "twitter" "instagram" "rss" "gitlab" "bitbucket" }}
+                                    {{ if in $svgIcons . }}
+                                        {{ $iconPath := printf "images/social/%s.svg" . }}
+                                        {{ with resources.Get $iconPath }}
+                                            <span class="align-middle me-1" style="display: inline-block; vertical-align: middle;">{{ .Content | safeHTML }}</span>
+                                        {{ end }}
+                                    {{ else }}
+                                        <span class="material-icons align-middle">{{ . }}</span>
+                                    {{ end }}
                                 {{ end }}
                                 {{ with .btnText }}
                                     {{ . }}
@@ -78,9 +88,19 @@
                             </a>
                         {{ end }}
                         {{ with .cta2Button }}
-                        <a href="{{ relLangURL .url }}" class="btn btn-lg btn-outline-primary mt-2">
+                            {{ $color := .color | default "primary" }}
+                            {{ $outline := .outline | default false }}
+                        <a href="{{ relLangURL .url }}" class="btn btn-lg {{ if $outline }}btn-outline-{{ else }}btn-{{ end }}{{ $color }} mt-2">
                             {{ with .icon }}
-                                <span class="material-icons align-middle">{{ . }}</span>
+                                {{ $svgIcons := slice "github" "twitter" "instagram" "rss" "gitlab" "bitbucket" }}
+                                {{ if in $svgIcons . }}
+                                    {{ $iconPath := printf "images/social/%s.svg" . }}
+                                    {{ with resources.Get $iconPath }}
+                                        <span class="align-middle me-1" style="display: inline-block; vertical-align: middle;">{{ .Content | safeHTML }}</span>
+                                    {{ end }}
+                                {{ else }}
+                                    <span class="material-icons align-middle">{{ . }}</span>
+                                {{ end }}
                             {{ end }}
                             {{ with .btnText }}
                                 {{ . }}
@@ -95,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-6 col-md-6 mt-4 pt-4 mt-sm-0 pt-sm-0">
+            <div class="col-lg-6 col-md-6 mt-4 mt-sm-0" style="padding-top: 5em; padding-bottom: 5em;">
                 {{ with .image }}
                     {{ $alt := .alt | default "hero image" }}
                     {{ $boxShadow := .boxShadow | default false }}
@@ -105,7 +125,7 @@
                         <!-- External URL image -->
                         <div class="ms-lg-4">
                             <div class="classic-hero-image">
-                                <img src="{{ .url }}" class="{{ if $boxShadow }}shadow-lg{{ else }}{{ end }} mx-auto d-block {{ if $rounded }}rounded-top-4{{ else }}{{ end }}" alt="{{ $alt }}" style="max-width: min(100%, 800px); max-height: 800px; height: auto; width: auto;">
+                                <img src="{{ .url }}" class="mx-auto d-block {{ if $boxShadow }}hero-image-shadow{{ end }} {{ if $rounded }}rounded-4{{ end }}" alt="{{ $alt }}">
                             </div>
                         </div>
                     {{ else }}
@@ -121,7 +141,7 @@
                                             {{ .Content | safeHTML }}
                                         {{ else }}
                                             {{ with .Resize (printf "%dx%d webp q85 drawing Lanczos" .Width .Height) }}
-                                                <img src="{{ .RelPermalink }}" class="{{ if $boxShadow }}shadow-lg{{ else }}{{ end }} mx-auto d-block {{ if $rounded }}rounded-top-4{{ else }}{{ end }}" alt="{{ $alt }}" style="max-width: min(100%, 800px); max-height: 800px; height: auto; width: auto;">
+                                                <img src="{{ .RelPermalink }}" class="mx-auto d-block {{ if $boxShadow }}hero-image-shadow{{ end }} {{ if $rounded }}rounded-4{{ end }}" alt="{{ $alt }}">
                                             {{ end }}
                                         {{ end }}
                                     {{ end }}

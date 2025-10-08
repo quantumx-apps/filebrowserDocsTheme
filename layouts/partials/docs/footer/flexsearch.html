@@ -2,44 +2,65 @@
     var suggestions = document.getElementById('suggestions');
     var search = document.getElementById('flexsearch');
 
-    const flexsearchContainer = document.getElementById('FlexSearchCollapse');
+    const flexsearchOverlay = document.getElementById('FlexSearchCollapse');
+    const flexsearchContainer = document.getElementById('FlexSearchContainer');
 
     const hideFlexsearchBtn = document.getElementById('hideFlexsearch');
 
     const configObject = { toggle: false }
-    const flexsearchContainerCollapse = new Collapse(flexsearchContainer, configObject) // initialized with no keyboard
+    const overlayCollapse = new Collapse(flexsearchOverlay, configObject);
+    const containerCollapse = new Collapse(flexsearchContainer, configObject);
+
+    // Helper function to show both overlay and search
+    function showSearch() {
+        overlayCollapse.show();
+        containerCollapse.show();
+        document.body.classList.add('search-overlay-active');
+        setTimeout(() => search.focus(), 100);
+    }
+
+    // Helper function to hide both overlay and search
+    function hideSearch() {
+        overlayCollapse.hide();
+        containerCollapse.hide();
+        document.body.classList.remove('search-overlay-active');
+    }
+
+    // Make toggle function available globally for the search button
+    window.toggleFlexSearch = function() {
+        if (flexsearchContainer.classList.contains('show')) {
+            hideSearch();
+        } else {
+            showSearch();
+        }
+    };
 
     if (search !== null) {
         document.addEventListener('keydown', inputFocus);
-        flexsearchContainer.addEventListener('show.bs.collapse', function () {
-            document.body.classList.add('search-overlay-active');
-            search.focus();
-        });
         
-        flexsearchContainer.addEventListener('hidden.bs.collapse', function () {
-            document.body.classList.remove('search-overlay-active');
-        });
-        // hide search collapse containder by clicking outside (except top header)
-        var topHeader = document.getElementById("top-header");
-        document.addEventListener('click', function(elem) {
-            if (!flexsearchContainer.contains(elem.target) && !topHeader.contains(elem.target))
-                flexsearchContainerCollapse.hide();
+        // Click on overlay to close
+        flexsearchOverlay.addEventListener('click', function(event) {
+            hideSearch();
         });
     }
 
-    hideFlexsearchBtn.addEventListener('click', () =>{
-        flexsearchContainerCollapse.hide()
+    hideFlexsearchBtn.addEventListener('click', () => {
+        hideSearch();
     })
 
     function inputFocus(e) {
         if (e.ctrlKey && e.key === '/') {
             e.preventDefault();
-            flexsearchContainerCollapse.toggle();
+            if (flexsearchContainer.classList.contains('show')) {
+                hideSearch();
+            } else {
+                showSearch();
+            }
         }
         if (e.key === 'Escape' ) {
             search.blur();
-            // suggestions.classList.add('d-none');
-            flexsearchContainerCollapse.hide();
+            suggestions.classList.add('d-none');
+            hideSearch();
         }
     };
 

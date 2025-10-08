@@ -65,7 +65,11 @@
     {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
         {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
         {{ else }}
-            <div class="collapse" id="FlexSearchCollapse">
+            <!-- Overlay background -->
+            <div class="collapse" id="FlexSearchCollapse"></div>
+            
+            <!-- Search container (sits on top of overlay) -->
+            <div class="collapse" id="FlexSearchContainer">
                 <div class="flexsearch-container">
                     <div id="search" class="flexsearch-wrapper">
                         <div id="search-input" class="flexsearch position-relative">
@@ -89,7 +93,7 @@
     {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
     {{ else }}
         <div id="fixed-search-button" class="fixed-search-button">
-            <button id="flexsearch-button" class="btn btn-soft search-button-large" data-bs-toggle="collapse" data-bs-target="#FlexSearchCollapse" aria-expanded="false" aria-controls="FlexSearchCollapse">
+            <button id="flexsearch-button" class="btn btn-soft search-button-large" onclick="window.toggleFlexSearch()" aria-expanded="false" aria-controls="FlexSearchCollapse FlexSearchContainer">
                 <span class="material-icons size-20 menu-icon align-middle">search</span>
                 <span class="flexsearch-button-placeholder ms-2 me-2">{{ i18n "search_title" }}</span>
             </button>
