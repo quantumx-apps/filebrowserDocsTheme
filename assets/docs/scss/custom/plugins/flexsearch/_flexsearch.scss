@@ -1,0 +1,598 @@
+/* FlexSearch - Enhanced to look like DocSearch */
+
+:root {
+    --flexsearch-container-bg-color: var(--white);
+    --flexsearch-after-bg-color: var(--primary);
+    --flexsearch-after-color: var(--white);
+    --flexsearch-button-hover-bg-color: var(--gray-100);
+    --flexsearch-key-bg-color: var(--gray-200);
+    --flexsearch-key-color: var(--text-default);
+    --flexsearch-suggestion-bg-color: var(--white);
+    --flexsearch-suggestion-link-hover-bg-color: #f8f9fa;
+    --flexsearch-suggestion-title-color: var(--primary);
+    --flexsearch-suggestion-title-border-color: var(--gray-300);
+    --flexsearch-suggestion-desc-color: var(--text-muted);
+    --flexsearch-input-bg-color: var(--white);
+    --flexsearch-input-border-color: var(--gray-300);
+    --flexsearch-input-focus-border-color: var(--primary);
+    --flexsearch-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    // Vue app color variables
+    --background: #ffffff;
+    --surfacePrimary: #f8f9fa;
+    --surfaceSecondary: #e9ecef;
+    --divider: rgba(0, 0, 0, 0.12);
+    --textPrimary: rgba(0, 0, 0, 0.87);
+    --textSecondary: rgba(0, 0, 0, 0.6);
+}
+
+[data-dark-mode] {
+    --flexsearch-container-bg-color: var(--top-header-bg);
+    --flexsearch-after-bg-color: hsl(var(--primary-hsl), 0.15);
+    --flexsearch-after-color: var(--primary-200);
+    --flexsearch-button-hover-bg-color: var(--gray-800);
+    --flexsearch-key-bg-color: var(--gray-700);
+    --flexsearch-key-color: var(--gray-300);
+    --flexsearch-suggestion-bg-color: var(--dark-secondary);
+    --flexsearch-suggestion-link-hover-bg-color: var(--gray-800);
+    --flexsearch-suggestion-title-color: var(--primary-200);
+    --flexsearch-suggestion-title-border-color: var(--gray-700);
+    --flexsearch-suggestion-desc-color: var(--gray-300);
+    --flexsearch-input-bg-color: var(--dark-secondary);
+    --flexsearch-input-border-color: var(--gray-600);
+    --flexsearch-input-focus-border-color: var(--primary-300);
+    --flexsearch-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+    // Vue app dark mode color variables
+    --background: #141D24;
+    --surfacePrimary: #20292F;
+    --surfaceSecondary: #3A4147;
+    --divider: rgba(255, 255, 255, 0.12);
+    --textPrimary: rgba(255, 255, 255, 0.87);
+    --textSecondary: rgba(255, 255, 255, 0.6);
+
+    // Dark mode search styling
+    .flexsearch-container .flexsearch {
+        background-color: var(--surfaceSecondary, #3A4147);
+        border-color: var(--surfaceSecondary, #3A4147);
+
+        &:focus-within {
+            background-color: var(--surfacePrimary, #20292F);
+            border-color: white;
+        }
+
+        &::before {
+            color: var(--textSecondary, rgba(255, 255, 255, 0.6));
+        }
+    }
+
+    .flexsearch-container .form-control {
+        color: var(--textPrimary, rgba(255, 255, 255, 0.87));
+
+        &::placeholder {
+            color: var(--textSecondary, rgba(255, 255, 255, 0.6));
+        }
+    }
+
+    // Dark mode suggestions
+    #suggestions {
+        background-color: var(--surfacePrimary, #20292F);
+        border-top-color: var(--surfaceSecondary, #3A4147);
+    }
+
+    #suggestions a {
+        color: var(--textPrimary, rgba(255, 255, 255, 0.87));
+
+        &:hover {
+            background-color: var(--surfaceSecondary, #3A4147);
+        }
+    }
+
+    .suggestion__title {
+        color: var(--textPrimary, rgba(255, 255, 255, 0.87));
+    }
+
+    .suggestion__description {
+        color: var(--textSecondary, rgba(255, 255, 255, 0.6));
+    }
+
+    // Dark mode for search button and close button
+    .search-button-large {
+        background-color: var(--surfaceSecondary, #3A4147);
+
+        &:hover {
+            background-color: var(--surfacePrimary, #20292F);
+        }
+    }
+
+    // Dark mode for overlay search input
+    .flexsearch-container .flexsearch {
+        background-color: var(--surfaceSecondary, #3A4147);
+
+        &:focus-within {
+            background-color: var(--surfacePrimary, #20292F);
+        }
+    }
+
+    #hideFlexsearch {
+        color: var(--textSecondary, rgba(255, 255, 255, 0.6));
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: inline-block !important;
+        width: auto !important;
+        height: auto !important;
+        line-height: 1 !important;
+
+        &:hover {
+            color: var(--textPrimary, rgba(255, 255, 255, 0.87));
+            background: none !important;
+            border: none !important;
+        }
+    }
+}
+
+#FlexSearchCollapse {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+// Fixed position search button
+.fixed-search-button {
+    position: fixed;
+    top: 0.75em;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    margin: 0;
+    padding: 0;
+
+}
+
+// Hide the search button when overlay is active
+body.search-overlay-active #flexsearch-button {
+    opacity: 0;
+    pointer-events: none;
+}
+
+// Larger search button styling
+.search-button-large {
+    min-width: 30em;
+    padding: 0.5rem 1rem;
+    border-radius: 1em;
+    background-color: rgba(255, 255, 255, 0.231);
+    border: none;
+    text-align: left;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 1);
+    }
+
+    // Mobile responsive sizing
+    @media (max-width: 768px) {
+        min-width: 15em;
+        padding: 0.3rem 0.6rem;
+    }
+
+    @media (max-width: 480px) {
+        min-width: 12em;
+        padding: 0.25rem 0.5rem;
+
+        .flexsearch-button-placeholder {
+            display: none; // Hide text on very small screens
+        }
+    }
+
+    @media (max-width: 360px) {
+        min-width: 10em;
+        padding: 0.2rem 0.4rem;
+
+        .flexsearch-button-placeholder {
+            display: none; // Hide text on very small screens
+        }
+    }
+}
+
+// Close icon styling (now just a span with material icon)
+#hideFlexsearch {
+    color: lightgray;
+    background: none ;
+    border: none ;
+    padding: 0 ;
+    margin: 0 ;
+    display: inline-block ;
+    width: auto ;
+    height: auto ;
+    line-height: 1 ;
+
+    &:hover {
+        color: white;
+        background: none ;
+        border: none ;
+    }
+}
+
+.flexsearch-container {
+    position: fixed ;
+    top: 0.5em;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1002;
+    opacity: 1;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    right: auto;
+    bottom: auto;
+    float: none;
+    clear: none;
+    display: block;
+
+    .flexsearch-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 30em;
+        max-width: 90vw;
+        margin: 0;
+        padding: 0;
+    }
+
+    // Mobile responsive sizing
+    @media (max-width: 768px) {
+        top: 0.5em !important;
+
+        .flexsearch-wrapper {
+            width: 15em;
+            max-width: 85vw;
+        }
+    }
+
+    @media (max-width: 480px) {
+        top: 0.5em !important;
+
+        .flexsearch-wrapper {
+            width: 12em;
+            max-width: 80vw;
+        }
+    }
+
+    @media (max-width: 360px) {
+        top: 0.5em !important;
+
+        .flexsearch-wrapper {
+            width: 10em;
+            max-width: 75vw;
+        }
+    }
+
+    .flexsearch {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.231);
+        border-radius: 1em;
+        padding: 0.5rem 1rem;
+        height: auto;
+        border: none;
+        min-width: 30em;
+        text-align: left;
+        width: 30em;
+        max-width: 90vw;
+
+        &:focus-within {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        // Mobile responsive sizing
+        @media (max-width: 768px) {
+            min-width: 15em;
+            width: 15em;
+            padding: 0.3rem 0.6rem;
+        }
+
+        @media (max-width: 480px) {
+            min-width: 12em;
+            width: 12em;
+            padding: 0.25rem 0.5rem;
+        }
+
+        @media (max-width: 360px) {
+            min-width: 10em;
+            width: 10em;
+            padding: 0.2rem 0.4rem;
+        }
+    }
+
+    .search-results {
+        position: relative;
+        width: 100%;
+    }
+
+    .form-control {
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        font-size: 1rem;
+        padding: 0 0 0 2.5rem; // Add left padding to account for search icon
+        color: white;
+        position: relative;
+        width: 100%;
+        text-align: left;
+        height: auto;
+        line-height: normal;
+
+        &:focus {
+            border: none;
+            box-shadow: none;
+            outline: none;
+            background-color: transparent;
+        }
+
+        &::placeholder {
+            color: lightgray;
+            font-weight: 400;
+        }
+    }
+
+    // Add search icon to input
+    .flexsearch {
+        position: relative;
+        border-style: solid;
+
+        &::before {
+            font-family: 'Material Icons';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: lightgray;
+            z-index: 10;
+            pointer-events: none;
+        }
+    }
+}
+
+.flexsearch-keymap {
+    padding: 0 0 1rem 0;
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+
+    .flexsearch-button-cmd-key {
+        height: 22px;
+        width: 32px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+
+    li {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 800px) {
+    .flexsearch-keymap {
+        display: none;
+    }
+}
+
+.flexsearch-key-label {
+    color: var(--form-control-placeholder-color);
+    font-size: 0.75em;
+    line-height: 1.6em;
+}
+
+.flexsearch-button-keys {
+    display: flex;
+    min-width: calc(40px + .8em);
+}
+
+.flexsearch-button-cmd-key {
+    align-items: center;
+    background: var(--flexsearch-key-bg-color);
+    border-radius: 4px;
+    color: var(--flexsearch-key-color);
+    display: flex;
+    height: 22px;
+    justify-content: center;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 32px;
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.flexsearch-button-key {
+    align-items: center;
+    background: var(--flexsearch-key-bg-color);
+    border-radius: 4px;
+    color: var(--flexsearch-key-color);
+    display: flex;
+    height: 22px;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 22px;
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#flexsearch-button {
+    display: flex;
+    height: 40px;
+    padding: 0 12px;
+    margin: 0 0 0 16px;
+    font-weight: 500;
+    align-items: center;
+    justify-content: start;
+    border-radius: 1em;
+    border: 1px solid var(--flexsearch-input-border-color);
+    background-color: var(--flexsearch-input-bg-color);
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    .flexsearch-button-placeholder {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .material-icons {
+        color: var(--text-default);
+    }
+}
+
+#flexsearch-button:hover {
+    background: var(--flexsearch-button-hover-bg-color) !important;
+    border-color: var(--flexsearch-input-focus-border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .flexsearch-button-placeholder {
+        color: var(--text-default);
+    }
+
+    .material-icons {
+        color: var(--primary);
+    }
+}
+
+
+#suggestions {
+    width: 100%;
+    max-width: none;
+    position: relative;
+    background-color: var(--flexsearch-suggestion-bg-color);
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    border-radius: 0 0 1em 1em;
+    box-shadow: var(--flexsearch-shadow);
+    border: none;
+    border-top: 1px solid var(--flexsearch-input-border-color);
+    margin-top: 0;
+    z-index: 1001;
+
+    // Limit to 1000px on very large screens
+    @media (min-height: 1112px) {
+        max-height: 1000px;
+    }
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(155, 155, 155, 0.3);
+        border-radius: 3px;
+        border: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(155, 155, 155, 0.5);
+    }
+}
+
+#suggestions a,
+.suggestion__no-results {
+    padding: 0.75rem 1rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    border-bottom: 1px solid var(--flexsearch-suggestion-title-border-color);
+    border-radius: 0.25em;
+    min-width: 100%;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--flexsearch-suggestion-link-hover-bg-color);
+    }
+}
+
+#suggestions a {
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+#suggestions a:focus {
+    background: var(--flexsearch-suggestion-link-hover-bg-color);
+    outline: 0;
+}
+
+#suggestions a:hover {
+    background: var(--flexsearch-suggestion-link-hover-bg-color);
+}
+
+.suggestion__no-results {
+    text-align: center;
+    color: var(--flexsearch-suggestion-desc-color);
+    font-style: italic;
+    border-bottom: none;
+}
+
+#suggestions span {
+    display: block;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.suggestion__title {
+    font-weight: 600;
+    color: var(--flexsearch-suggestion-title-color);
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    width: auto;
+    padding-right: 0;
+    border-right: none;
+    display: block;
+    text-align: left;
+}
+
+.suggestion__description {
+    color: var(--flexsearch-suggestion-desc-color);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin: 0;
+    width: auto;
+    padding-left: 0;
+}
+
+// Cancel button styling
+#hideFlexsearch {
+    background-color: var(--gray-100);
+    border: 1px solid var(--flexsearch-input-border-color);
+    color: var(--text-default);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+
+    &:hover {
+        background-color: var(--gray-200);
+        border-color: var(--gray-400);
+    }
+}
+
+
+#suggestions a {
+    display: block;
+}

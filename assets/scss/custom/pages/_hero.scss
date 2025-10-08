@@ -1,0 +1,25 @@
+//
+// hero.scss
+//
+
+@media (max-width:767px) {
+    .classic-hero-image img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+.hero {
+    background-size: cover;
+    padding-top: 70px;
+}
+
+// Hide the top navigation bar on landing page
+body:not(.docs) #topnav {
+    display: none;
+}
+
+// Remove top padding when nav is hidden
+body:not(.docs) .hero {
+    padding-top: 20px;
+}
