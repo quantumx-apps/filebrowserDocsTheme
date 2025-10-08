@@ -1,3 +1,3 @@
-module github.com/gtsteffaniak/filebrowserDocsTheme
+module github.com/quantumx-apps/filebrowserDocsTheme
 
-go 1.19
+go 1.24
