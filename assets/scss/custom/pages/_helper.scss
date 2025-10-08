@@ -161,7 +161,7 @@
 
 // Rounded
 .rounded {
-    border-radius: 4px !important;
+    border-radius: 0.5em !important;
 }
 
 .rounded-top {
@@ -434,6 +434,7 @@ small {
     text-align: -webkit-center;
     padding-top: 7px;
     background: $primary;
+    border-radius: .5em;
     color: $back-to-top-color  !important;
 
     .icons {

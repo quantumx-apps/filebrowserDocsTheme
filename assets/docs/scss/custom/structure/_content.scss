@@ -97,7 +97,7 @@ i {
         justify-content: center;
         font-size: 24px;
         // border: solid 1px var(--content-icon-border);
-        border-radius: 5px;
+        border-radius: 0.5em;
 
         @media (max-width: 768px) {
             align-self: auto;
@@ -186,7 +186,7 @@ i {
         padding: 5px 0;
         width: 20px;
         height: 20px;
-        border-radius: 5px;
+        border-radius: 0.5em;
         position: absolute;
         left: 0;
         top: 3px;
@@ -213,7 +213,7 @@ i {
     margin: 16px 0;
     padding: $code-block-padding-top;
     background: var(--code-block-bg);
-    border-radius: 4px;
+    border-radius: 0.5em;
     pre {
         padding: 0;
     }
@@ -226,13 +226,13 @@ i {
     padding: 1px 2px;
     background: var(--inline-code-bg);
     border: var(--inline-code-border);
-    border-radius: 4px;
+    border-radius: 0.5em;
 }
 
 .docs-content .main-content pre {
     margin: 0;
     // background-color: var(--code-block-bg) !important;
-    border-radius: 4px;
+    border-radius: 0.5em;
     padding: $code-block-padding-top;
 
     code {

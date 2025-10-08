@@ -52,7 +52,7 @@
 .DocSearch-Form {
     align-items: center;
     background: var(--docsearch-searchbox-focus-background);
-    border-radius: 4px;
+    border-radius: 0.5em;
     box-shadow: var(--docsearch-searchbox-shadow);
     display: flex;
     height: var(--docsearch-searchbox-height);
@@ -247,7 +247,7 @@
 }
 
 .DocSearch-Hit {
-    border-radius: 4px;
+    border-radius: 0.5em;
     display: flex;
     padding-bottom: 4px;
     position: relative
@@ -279,7 +279,7 @@
 
 .DocSearch-Hit a {
     background: var(--docsearch-hit-background);
-    border-radius: 4px;
+    border-radius: 0.5em;
     box-shadow: var(--docsearch-hit-shadow);
     display: block;
     padding-left: var(--docsearch-spacing);

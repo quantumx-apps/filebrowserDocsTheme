@@ -173,7 +173,6 @@
     padding: 0;
     display: none;
     pointer-events: none; // Container doesn't block clicks
-
     &.show {
         display: block;
     }
@@ -192,7 +191,7 @@
 // Must be above overlay (1001) and search container (1002)
 .fixed-search-button {
     position: fixed;
-    top: 0.75em;
+    top: 0.4em;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1003; // Above overlay and container
@@ -210,8 +209,8 @@ body.search-overlay-active .fixed-search-button {
     min-width: 30em;
     padding: 0.5rem 0.7em;
     border-radius: 1em;
+    border-color: lightgray !important;
     background-color: rgba(255, 255, 255, 0.231);
-    border: none;
     text-align: left;
 
     &:hover {
@@ -220,27 +219,13 @@ body.search-overlay-active .fixed-search-button {
 
     // Mobile responsive sizing
     @media (max-width: 768px) {
-        min-width: 15em;
-        padding: 0.3rem 0.6rem;
-    }
-
-    @media (max-width: 480px) {
         min-width: 12em;
         padding: 0.25rem 0.5rem;
-
-        .flexsearch-button-placeholder {
-            display: none; // Hide text on very small screens
-        }
     }
+}
 
-    @media (max-width: 360px) {
-        min-width: 10em;
-        padding: 0.2rem 0.4rem;
-
-        .flexsearch-button-placeholder {
-            display: none; // Hide text on very small screens
-        }
-    }
+[data-dark-mode] .search-button-large {
+    border-color: var(--gray-700) !important;
 }
 
 // Close icon styling (now just a span with material icon)
@@ -264,9 +249,9 @@ body.search-overlay-active .fixed-search-button {
 
 .flexsearch-container {
     position: fixed;
-    top: 0.75em;
-    left: 50%;
     transform: translateX(-50%);
+    top: 0.4em;
+    left: 50%;
     z-index: 1003;
     opacity: 1;
     margin: 0;
@@ -286,33 +271,21 @@ body.search-overlay-active .fixed-search-button {
         max-width: 90vw;
         margin: 0;
         padding: 0;
-    }
 
-    // Mobile responsive sizing
-    @media (max-width: 768px) {
-        top: 0.5em !important;
+        &:focus-within {
+            transition: width 0.3s ease;
 
-        .flexsearch-wrapper {
-            width: 15em;
-            max-width: 85vw;
+            @media (min-width: 769px) {
+                width: 40em;
+            }
         }
-    }
 
-    @media (max-width: 480px) {
-        top: 0.5em !important;
-
-        .flexsearch-wrapper {
+        @media (max-width: 768px) {
             width: 12em;
-            max-width: 80vw;
-        }
-    }
 
-    @media (max-width: 360px) {
-        top: 0.5em !important;
-
-        .flexsearch-wrapper {
-            width: 10em;
-            max-width: 75vw;
+            &:focus-within {
+                width: 90vw;
+            }
         }
     }
 
@@ -324,32 +297,24 @@ body.search-overlay-active .fixed-search-button {
         padding: 0.5rem 0.7em;
         height: auto;
         border: none;
-        min-width: 30em;
         text-align: left;
         width: 30em;
-        max-width: 90vw;
 
         &:focus-within {
             background-color: rgba(255, 255, 255, 1);
+            transition: width 0.3s ease, background-color 0s;
+
+            @media (min-width: 769px) {
+                width: 40em;
+            }
+
+            @media (max-width: 768px) {
+                width: 90vw;
+            }
         }
 
-        // Mobile responsive sizing
         @media (max-width: 768px) {
-            min-width: 15em;
-            width: 15em;
-            padding: 0.3rem 0.6rem;
-        }
-
-        @media (max-width: 480px) {
-            min-width: 12em;
             width: 12em;
-            padding: 0.25rem 0.5rem;
-        }
-
-        @media (max-width: 360px) {
-            min-width: 10em;
-            width: 10em;
-            padding: 0.2rem 0.4rem;
         }
     }
 
@@ -422,7 +387,7 @@ body.search-overlay-active .fixed-search-button {
     .flexsearch-button-cmd-key {
         height: 22px;
         width: 32px;
-        border-radius: 4px;
+        border-radius: 0.5em;
         font-size: 11px;
     }
 
@@ -453,7 +418,7 @@ body.search-overlay-active .fixed-search-button {
 .flexsearch-button-cmd-key {
     align-items: center;
     background: var(--flexsearch-key-bg-color);
-    border-radius: 4px;
+    border-radius: 0.5em;
     color: var(--flexsearch-key-color);
     display: flex;
     height: 22px;
@@ -469,7 +434,7 @@ body.search-overlay-active .fixed-search-button {
 .flexsearch-button-key {
     align-items: center;
     background: var(--flexsearch-key-bg-color);
-    border-radius: 4px;
+    border-radius: 0.5em;
     color: var(--flexsearch-key-color);
     display: flex;
     height: 22px;
@@ -493,7 +458,7 @@ body.search-overlay-active .fixed-search-button {
     border-radius: 1em;
     border: 1px solid var(--flexsearch-input-border-color);
     background-color: var(--flexsearch-input-bg-color);
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
     .flexsearch-button-placeholder {

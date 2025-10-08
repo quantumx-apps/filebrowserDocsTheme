@@ -28,7 +28,7 @@
     border: 2px solid var(--tooltip-border-color);
     border-width: 2px 2px 2px 8px;
     filter: drop-shadow(4px 4px 5px var(--tooltip-drop-shadow-color));
-    --#{$prefix}tooltip-border-radius: 4px;
+    --#{$prefix}tooltip-border-radius: 0.5em;
 
     a {
         color: var(--tooltip-link-color);
