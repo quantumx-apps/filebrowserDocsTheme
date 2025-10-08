@@ -27,10 +27,10 @@
     {{ end }}
 
     {{ if .Site.Params.feedback.enabled | default false -}}
-        {{ if or (.Site.Params.plausible.dataDomain) (.Site.GoogleAnalytics) }}
+        {{ if .Site.Params.plausible.dataDomain }}
             {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "footer/feedback.html") . -}}
         {{ else }}
-            {{ errorf "Either Google Analytics or Plausible Analytics must be configured before enabling the Feedback Widget." }}
+            {{ errorf "Plausible Analytics must be configured before enabling the Feedback Widget." }}
         {{ end }}
     {{ end -}}
 
