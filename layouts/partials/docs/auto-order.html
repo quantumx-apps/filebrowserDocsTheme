@@ -1,0 +1,91 @@
+{{/*
+Auto-ordering partial that assigns weights based on file system structure
+Usage: {{ partial "docs/auto-order.html" . }}
+*/}}
+
+{{ $currentPage := . }}
+{{ $section := $currentPage.Section }}
+
+{{/* Get all sections and pages, then sort them automatically */}}
+{{ $allItems := slice }}
+
+{{/* Process main sections (docs/*) */}}
+{{ range .Site.Sections }}
+  {{ if eq .Section "docs" }}
+    {{ $weight := 0 }}
+    {{/* Assign weight based on directory name for main sections */}}
+    {{ $sectionWeights := dict 
+      "getting-started" 1
+      "configuration" 2  
+      "access-control" 3
+      "shares" 4
+      "integrations" 5
+      "user-guides" 6
+      "advanced" 7
+      "reference" 8
+      "contributing" 9
+      "help" 10
+    }}
+    {{ $weight = index $sectionWeights .File.Dir | default 999 }}
+    
+    {{ $item := dict 
+      "Page" .
+      "Weight" $weight
+      "Type" "section"
+      "Path" .File.Dir
+    }}
+    {{ $allItems = $allItems | append $item }}
+  {{ end }}
+{{ end }}
+
+{{/* Sort by weight, then by title */}}
+{{ $sortedItems := sort $allItems "Weight" "asc" }}
+{{ $finalItems := slice }}
+
+{{ range $sortedItems }}
+  {{ $page := .Page }}
+  {{ $weight := .Weight }}
+  
+  {{/* Process subsections and pages within this section */}}
+  {{ $subItems := slice }}
+  
+  {{/* Add subsections first */}}
+  {{ range $page.Sections }}
+    {{ $subWeight := 1 }}
+    {{ $subItem := dict 
+      "Page" .
+      "Weight" $subWeight
+      "Type" "subsection"
+      "Path" .File.Dir
+    }}
+    {{ $subItems = $subItems | append $subItem }}
+  {{ end }}
+  
+  {{/* Add pages */}}
+  {{ range $page.Pages }}
+    {{ if not .IsSection }}
+      {{ $pageWeight := 2 }}
+      {{ $pageItem := dict 
+        "Page" .
+        "Weight" $pageWeight
+        "Type" "page"
+        "Path" .File.Dir
+      }}
+      {{ $subItems = $subItems | append $pageItem }}
+    {{ end }}
+  {{ end }}
+  
+  {{/* Sort subsections and pages by weight, then by title */}}
+  {{ $sortedSubItems := sort $subItems "Weight" "asc" }}
+  
+  {{/* Add the main section */}}
+  {{ $finalItems = $finalItems | append . }}
+  
+  {{/* Add its subsections and pages */}}
+  {{ range $sortedSubItems }}
+    {{ $finalItems = $finalItems | append . }}
+  {{ end }}
+{{ end }}
+
+{{/* Return the sorted items */}}
+{{ return $finalItems }}

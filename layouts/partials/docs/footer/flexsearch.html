@@ -16,6 +16,8 @@
         overlayCollapse.show();
         containerCollapse.show();
         document.body.classList.add('search-overlay-active');
+        // Prevent body scroll when search is active
+        document.body.style.overflow = 'hidden';
         setTimeout(() => search.focus(), 100);
     }
 
@@ -24,6 +26,12 @@
         overlayCollapse.hide();
         containerCollapse.hide();
         document.body.classList.remove('search-overlay-active');
+        // Restore body scroll
+        document.body.style.overflow = '';
+        // Clear search input and suggestions
+        search.value = '';
+        suggestions.innerHTML = '';
+        suggestions.classList.add('d-none');
     }
 
     // Make toggle function available globally for the search button
@@ -47,6 +55,26 @@
     hideFlexsearchBtn.addEventListener('click', () => {
         hideSearch();
     })
+
+    // Prevent scroll propagation from suggestions to body
+    if (suggestions !== null) {
+        suggestions.addEventListener('wheel', function(e) {
+            const scrollTop = suggestions.scrollTop;
+            const scrollHeight = suggestions.scrollHeight;
+            const height = suggestions.clientHeight;
+            const delta = e.deltaY;
+            const up = delta < 0;
+
+            // Prevent scrolling beyond the bounds
+            if (!up && delta > scrollHeight - height - scrollTop) {
+                suggestions.scrollTop = scrollHeight;
+                e.preventDefault();
+            } else if (up && -delta > scrollTop) {
+                suggestions.scrollTop = 0;
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
 
     function inputFocus(e) {
         if (e.ctrlKey && e.key === '/') {
@@ -177,10 +205,45 @@
         );
     {{ end -}}
 
+    // Generate breadcrumb path from URL
+    function generateBreadcrumb(href, pageTitle) {
+        // Remove trailing slash and split the path
+        const path = href.replace(/\/$/, '').split('/').filter(segment => segment);
+        
+        // Filter out language codes (en, es, etc.) and 'docs' from breadcrumb
+        const filteredPath = path.filter(segment => 
+            segment.length > 2 && segment !== 'docs'
+        );
+        
+        // Convert path segments to readable names
+        const breadcrumbSegments = filteredPath.map(segment => {
+            // Replace hyphens and underscores with spaces
+            let formatted = segment.replace(/[-_]/g, ' ');
+            // Capitalize first letter of each word
+            formatted = formatted.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            return formatted;
+        });
+        
+        // If we have segments, use them; otherwise just use the page title
+        if (breadcrumbSegments.length > 1) {
+            // Replace the last segment with the actual page title
+            breadcrumbSegments[breadcrumbSegments.length - 1] = pageTitle;
+            return breadcrumbSegments.join(' > ');
+        } else if (breadcrumbSegments.length === 1) {
+            // Only one segment, just use the page title
+            return pageTitle;
+        } else {
+            // No segments, return page title
+            return pageTitle;
+        }
+    }
+
     search.addEventListener('input', show_results, true);
 
     function show_results(){
-        const maxResult = {{ .Site.Params.flexsearch.maxResult | default 5}};
+        const maxResult = {{ .Site.Params.flexsearch.maxResult | default 10}};
         const minlength = {{ .Site.Params.flexsearch.minQueryChar | default 0}};
         var searchQuery = sanitizeHTML(this.value);
         var results = index.search(searchQuery, {limit: maxResult, enrich: true});
@@ -223,7 +286,9 @@
             entry.appendChild(a);
 
             const title = document.createElement('span');
-            title.textContent = doc.title;
+            // Generate breadcrumb from URL path
+            const breadcrumb = generateBreadcrumb(href, doc.title);
+            title.textContent = breadcrumb;
             title.classList.add("suggestion__title");
             a.appendChild(title);
 

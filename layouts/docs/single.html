@@ -1,4 +1,28 @@
 {{ define "main" }}
+    <!-- Page metadata -->
+    {{ if or .Date .Lastmod }}
+    <div class="page-meta mb-4 p-3 rounded" style="background-color: var(--alert-default-bg, rgba(0,0,0,0.06)); color: var(--text-default, inherit);">
+        <div class="row">
+            {{ if .Date }}
+            <div class="col-md-6">
+                <small style="color: inherit;">
+                    <span class="material-icons size-16 align-text-bottom me-1" style="color: inherit;">schedule</span>
+                    <strong>Published:</strong> {{ .Date.Format "January 2, 2006" }}
+                </small>
+            </div>
+            {{ end }}
+            {{ if .Lastmod }}
+            <div class="col-md-6">
+                <small style="color: inherit;">
+                    <span class="material-icons size-16 align-text-bottom me-1" style="color: inherit;">update</span>
+                    <strong>Last updated:</strong> {{ .Lastmod.Format "January 2, 2006" }}
+                </small>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+    {{ end }}
+
     <!-- override Prism's default copy messages to 'empty'. Required by CSS styling.
          see: https://prismjs.com/plugins/copy-to-clipboard/#styling -->
     <div data-prismjs-copy="" data-prismjs-copy-success="" data-prismjs-copy-error="">

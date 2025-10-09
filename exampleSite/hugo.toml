@@ -48,6 +48,9 @@ defaultContentLanguage = 'en'
   #     title = true
 
 [params]
+  # Enable automatic ordering based purely on file system structure
+  # No hardcoded ordering - everything is sorted by directory path
+  autoOrdering = true
 
   # Logo configuration
   # Choose between Material Icon (default) or custom image

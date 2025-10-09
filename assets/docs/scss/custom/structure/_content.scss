@@ -85,6 +85,11 @@
     align-self: center;
 }
 
+// Add spacing below the title section
+.docs-content > .mb-0.d-flex {
+    margin-bottom: 1.5rem !important;
+}
+
 i {
     &.title-icon {
         width: 44px;
@@ -273,4 +278,23 @@ i {
 
 .docs-content figcaption {
     font-size: small;
+}
+
+// Add bottom spacing for tables
+.docs-content .main-content table {
+    margin-bottom: 1.5rem;
+}
+
+// Add bottom spacing for other elements that need it
+.docs-content .main-content p {
+    margin-bottom: 1rem;
+}
+
+.docs-content .main-content h2,
+.docs-content .main-content h3,
+.docs-content .main-content h4,
+.docs-content .main-content h5,
+.docs-content .main-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
 }

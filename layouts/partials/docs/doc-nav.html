@@ -3,29 +3,120 @@
 {{ if or .Prev .Next -}}
 	<!-- https://www.feliciano.tech/blog/custom-sort-hugo-single-pages/ -->
 	{{ $pages := where .Site.RegularPages "Section" .Section -}}
-    <div class="row flex-xl-nowrap {{ if .Next }}{{ else }}flex-row-reverse{{ end }}">
-	{{ with $pages.Next . -}}
-        <div class="col-sm-6 pt-2 doc-next">
-		<a href="{{ .RelPermalink }}">
+	
+	{{/* Use automatic ordering if enabled, otherwise use default ordering */}}
+	{{ $nextPage := false }}
+	{{ $prevPage := false }}
+	
+	{{ if .Site.Params.autoOrdering }}
+		{{/* Get current page's directory */}}
+		{{ $currentDir := .File.Dir }}
+		
+		{{/* Try to find neighbors in the same directory */}}
+		{{ $sameDirPages := slice }}
+		{{ range .Site.RegularPages }}
+			{{ if eq .Section "docs" }}
+				{{ $pageDir := .File.Dir }}
+				{{ if eq $pageDir $currentDir }}
+					{{ $item := dict 
+						"Page" .
+						"Path" $pageDir
+						"RelPermalink" .RelPermalink
+					}}
+					{{ $sameDirPages = $sameDirPages | append $item }}
+				{{ end }}
+			{{ end }}
+		{{ end }}
+		{{ $sameDirPages = sort $sameDirPages "Path" "asc" }}
+		
+		{{/* Find current page index in same directory */}}
+		{{ $currentIndex := -1 }}
+		{{ range $i, $item := $sameDirPages }}
+			{{ if eq $item.RelPermalink $.RelPermalink }}
+				{{ $currentIndex = $i }}
+			{{ end }}
+		{{ end }}
+		
+		{{/* Get next and previous from same directory */}}
+		{{ if ge $currentIndex 0 }}
+			{{ if gt $currentIndex 0 }}
+				{{ $prevPage = index $sameDirPages (sub $currentIndex 1) }}
+			{{ end }}
+			{{ if lt $currentIndex (sub (len $sameDirPages) 1) }}
+				{{ $nextPage = index $sameDirPages (add $currentIndex 1) }}
+			{{ end }}
+		{{ end }}
+		
+		{{/* If no neighbors in same directory, try sibling directories */}}
+		{{ if and (not $nextPage) (not $prevPage) }}
+			{{ $parentDir := printf "%s/" (strings.TrimSuffix "/" (strings.TrimSuffix (path.Base $currentDir) $currentDir)) }}
+			
+			{{ if ne $parentDir "docs/" }}
+				{{/* Get all pages in parent directory and its subdirectories */}}
+				{{ $siblingPages := slice }}
+				{{ range .Site.RegularPages }}
+					{{ if eq .Section "docs" }}
+						{{ $pageDir := .File.Dir }}
+						{{ if or (eq $pageDir $parentDir) (hasPrefix $pageDir $parentDir) }}
+							{{ $item := dict 
+								"Page" .
+								"Path" $pageDir
+								"RelPermalink" .RelPermalink
+							}}
+							{{ $siblingPages = $siblingPages | append $item }}
+						{{ end }}
+					{{ end }}
+				{{ end }}
+				{{ $siblingPages = sort $siblingPages "Path" "asc" }}
+				
+				{{/* Find current page index in sibling pages */}}
+				{{ $currentSiblingIndex := -1 }}
+				{{ range $i, $item := $siblingPages }}
+					{{ if eq $item.RelPermalink $.RelPermalink }}
+						{{ $currentSiblingIndex = $i }}
+					{{ end }}
+				{{ end }}
+				
+				{{/* Get next and previous from sibling pages */}}
+				{{ if ge $currentSiblingIndex 0 }}
+					{{ if gt $currentSiblingIndex 0 }}
+						{{ $prevPage = index $siblingPages (sub $currentSiblingIndex 1) }}
+					{{ end }}
+					{{ if lt $currentSiblingIndex (sub (len $siblingPages) 1) }}
+						{{ $nextPage = index $siblingPages (add $currentSiblingIndex 1) }}
+					{{ end }}
+				{{ end }}
+			{{ end }}
+		{{ end }}
+	{{ else }}
+		{{/* Use original weight-based ordering */}}
+		{{ $nextPage = $pages.Next . }}
+		{{ $prevPage = $pages.Prev . }}
+	{{ end }}
+	
+    <div class="row flex-xl-nowrap {{ if $prevPage }}{{ else }}flex-row-reverse{{ end }}">
+	{{ with $prevPage -}}
+        <div class="col-sm-6 pt-2 doc-prev">
+		<a href="{{ if .Page }}{{ .Page.RelPermalink }}{{ else }}{{ .RelPermalink }}{{ end }}">
 			<div class="card h-100 my-1">
 				<div class="card-body py-2">
-                    <p class="card-title fs-5 fw-semibold lh-base mb-0"><i class="material-icons align-middle">navigate_before</i> {{ .Title }}</p>
+                    <p class="card-title fs-5 fw-semibold lh-base mb-0"><i class="material-icons align-middle">navigate_before</i> {{ if .Page }}{{ .Page.Title }}{{ else }}{{ .Title }}{{ end }}</p>
 					{{ if eq .Site.Params.docs.navDesc true -}}
-                    	<p class="card-text ms-2">{{ .Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}</p>
+                    	<p class="card-text ms-2">{{ if .Page }}{{ .Page.Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}{{ else }}{{ .Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}{{ end }}</p>
 					{{ end }}
 				</div>
 			</div>
 		</a>
         </div>
 	{{ end -}}
-	{{ with $pages.Prev . -}}
-        <div class="col-sm-6 pt-2 doc-prev">
-		<a class="ms-auto" href="{{ .RelPermalink }}">
+	{{ with $nextPage -}}
+        <div class="col-sm-6 pt-2 doc-next">
+		<a class="ms-auto" href="{{ if .Page }}{{ .Page.RelPermalink }}{{ else }}{{ .RelPermalink }}{{ end }}">
 			<div class="card h-100 my-1 text-end">
 				<div class="card-body py-2">
-                    <p class="card-title fs-5 fw-semibold lh-base mb-0">{{ .Title }} <i class="material-icons align-middle">navigate_next</i></p>
+                    <p class="card-title fs-5 fw-semibold lh-base mb-0">{{ if .Page }}{{ .Page.Title }}{{ else }}{{ .Title }}{{ end }} <i class="material-icons align-middle">navigate_next</i></p>
 					{{ if eq .Site.Params.docs.navDesc true -}}
-                    	<p class="card-text me-2">{{ .Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}</p>
+                    	<p class="card-text me-2">{{ if .Page }}{{ .Page.Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}{{ else }}{{ .Description | truncate (.Site.Params.docs.navDescTrunc | default 40) }}{{ end }}</p>
 					{{ end }}
 				</div>
 			</div>

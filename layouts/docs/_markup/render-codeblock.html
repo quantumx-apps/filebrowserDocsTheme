@@ -73,11 +73,7 @@
     {{- range $k, $v := $attributes }}
       {{- printf " %s=%q" $k $v | safeHTMLAttr }}
     {{- end -}}
-  >
-  <code>
-  {{- .Inner -}}
-  </code>
-  </pre>
+  ><code>{{ .Inner }}</code></pre>
   </div>
 {{ else }}
     {{ $result := transform.HighlightCodeBlock . }}

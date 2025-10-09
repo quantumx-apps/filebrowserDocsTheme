@@ -1,7 +1,6 @@
 ---
-weight: 999
 title: "{{ replace .Name "-" " " | title }}"
-description: ""
+description: "Brief description of the page (40-60 characters recommended)"
 icon: "article"
 date: "{{ .Date }}"
 lastmod: "{{ .Date }}"

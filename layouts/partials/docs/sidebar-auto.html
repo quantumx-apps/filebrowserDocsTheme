@@ -1,0 +1,128 @@
+<!-- sidebar-wrapper with automatic ordering -->
+<nav id="sidebar" class="sidebar-wrapper">
+    <div class="sidebar-content" >
+        <div class="sidebar-brand">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                {{ with .Site.Data.landing.hero.titleLogo }}
+                    {{ if .icon }}
+                        <!-- Material Icon Logo -->
+                        <span style="display: inline-flex; align-items: center; height: 30px; line-height: 30px;">
+                            <i class="material-icons filled" style="font-size: 30px; color: {{ .iconColor | default "#2196F3" }};">{{ .icon }}</i>
+                        </span>
+                    {{ end }}
+                {{ end }}
+                <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: var(--sidebar-text-color);">
+                    {{ .Site.Data.landing.hero.title | default "FileBrowser Quantum" }}
+                </h5>
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            {{ $currentPage := . -}}
+            {{ $section := $currentPage.Section -}}
+            
+            {{/* Use automatic ordering instead of ByWeight */}}
+            {{ $autoOrderedItems := partial "docs/auto-order.html" . }}
+            
+            {{ range $autoOrderedItems }}
+                {{ $page := .Page }}
+                {{ $active := in $currentPage.RelPermalink $page.RelPermalink }}
+                
+                {{ if eq .Type "section" }}
+                    {{/* Main section - check if it has subsections or pages */}}
+                    {{ $hasChildren := or $page.Sections $page.Pages }}
+                    {{ if $hasChildren }}
+                        <li class="sidebar-dropdown {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
+                            <button class="btn">
+                                {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                    <i class="material-icons me-2">{{- $page.Params.icon | default "notes" }}</i>
+                                {{ end }}
+                                {{- $page.Title }}
+                            </button>
+                            <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
+                                <ul>
+                                    {{/* Process subsections and pages in this section */}}
+                                    {{ $subItems := slice }}
+                                    
+                                    {{/* Add subsections */}}
+                                    {{ range $page.Sections }}
+                                        {{ $subItem := dict 
+                                            "Page" .
+                                            "Type" "subsection"
+                                        }}
+                                        {{ $subItems = $subItems | append $subItem }}
+                                    {{ end }}
+                                    
+                                    {{/* Add pages */}}
+                                    {{ range $page.Pages }}
+                                        {{ if not .IsSection }}
+                                            {{ $subItem := dict 
+                                                "Page" .
+                                                "Type" "page"
+                                            }}
+                                            {{ $subItems = $subItems | append $subItem }}
+                                        {{ end }}
+                                    {{ end }}
+                                    
+                                    {{/* Sort by title for consistent ordering */}}
+                                    {{ $sortedSubItems := sort $subItems "Page.Title" "asc" }}
+                                    
+                                    {{ range $sortedSubItems }}
+                                        {{ $subPage := .Page }}
+                                        {{ $subActive := in $currentPage.RelPermalink $subPage.RelPermalink }}
+                                        
+                                        {{ if eq .Type "subsection" }}
+                                            {{/* Subsection with nested content */}}
+                                            <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $subActive }}current active{{ end }}">
+                                                <button class="btn">
+                                                    {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                                        <i class="material-icons me-2">{{- $subPage.Params.icon | default "folder" }}</i>
+                                                    {{ end }}
+                                                    {{- $subPage.Title }}
+                                                </button>
+                                                <div class="sidebar-submenu {{ if $subActive }}d-block{{ end }}">
+                                                    <ul>
+                                                        {{/* Process pages in subsection */}}
+                                                        {{ range $subPage.Pages }}
+                                                            {{ $pageActive := in $currentPage.RelPermalink .RelPermalink }}
+                                                            <li class="{{ if $pageActive }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}">
+                                                                <a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a>
+                                                            </li>
+                                                        {{ end }}
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        {{ else }}
+                                            {{/* Direct page */}}
+                                            <li class="{{ if $subActive }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}">
+                                                <a class="sidebar-nested-link" href="{{ $subPage.Permalink }}">{{ $subPage.Title }}</a>
+                                            </li>
+                                        {{ end }}
+                                    {{ end }}
+                                </ul>
+                            </div>
+                        </li>
+                    {{ else }}
+                        {{/* Section without children */}}
+                        <li class="{{ if $active }}current{{ end }}">
+                            <a class="sidebar-root-link" href="{{ $page.Permalink }}">
+                                {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                    <i class="material-icons me-2">{{ $page.Params.icon }}</i>
+                                {{ end }}
+                                {{ $page.Title }}
+                            </a>
+                        </li>
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+        </ul>
+        <!-- sidebar-menu  -->
+    </div>
+    <!-- Sidebar Footer -->
+        <ul class="sidebar-footer list-unstyled mb-0">
+            <!-- <li class="list-inline-item mb-0">
+                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#lang-selector-popup" class="btn btn-primary m-1">Language</a>
+            </li> -->
+        </ul>
+    <!-- Sidebar Footer -->
+</nav>
+<!-- sidebar-wrapper  -->

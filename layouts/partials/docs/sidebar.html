@@ -19,9 +19,129 @@
         <ul class="sidebar-menu">
             {{ $currentPage := . -}}
             {{ $section := $currentPage.Section -}}
-            {{ range (where .Site.Sections.ByWeight "Section" "in" $section) }}
-                {{ $child_pages := union .Sections .Pages }}
-                {{ range $child_pages.ByWeight }}
+            
+            {{/* Check if automatic ordering is enabled */}}
+            {{ if .Site.Params.autoOrdering }}
+                {{/* Use automatic ordering based purely on file system structure */}}
+                {{ $docsSection := .Site.GetPage "docs" }}
+                
+                {{/* Process sections in order by file path */}}
+                {{ $sortedSections := slice }}
+                {{ range $docsSection.Sections }}
+                    {{ $item := dict 
+                        "Page" .
+                        "Path" .File.Dir
+                    }}
+                    {{ $sortedSections = $sortedSections | append $item }}
+                {{ end }}
+                {{ $sortedSections = sort $sortedSections "Path" "asc" }}
+                
+                {{ range $sortedSections }}
+                    {{ $sectionPage := .Page }}
+                    {{ $active := in $currentPage.RelPermalink $sectionPage.RelPermalink }}
+                    {{ $hasChildren := or $sectionPage.Sections $sectionPage.Pages }}
+                        
+                    {{ if $hasChildren }}
+                        <li class="sidebar-dropdown {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
+                            <button class="btn">
+                                {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                    <i class="material-icons me-2">{{- $sectionPage.Params.icon | default "notes" }}</i>
+                                {{ end }}
+                                {{- $sectionPage.Title }}
+                            </button>
+                            <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
+                                <ul>
+                                    {{/* Process subsections and pages, sorted by file path */}}
+                                    {{ $subItems := slice }}
+                                    
+                                    {{/* Add subsections */}}
+                                    {{ range $sectionPage.Sections }}
+                                        {{ $subItem := dict 
+                                            "Page" .
+                                            "Type" "subsection"
+                                            "Path" .File.Dir
+                                            "Title" .Title
+                                        }}
+                                        {{ $subItems = $subItems | append $subItem }}
+                                    {{ end }}
+                                    
+                                    {{/* Add pages */}}
+                                    {{ range $sectionPage.Pages }}
+                                        {{ if not .IsSection }}
+                                            {{ $subItem := dict 
+                                                "Page" .
+                                                "Type" "page"
+                                                "Path" .File.Dir
+                                                "Title" .Title
+                                            }}
+                                            {{ $subItems = $subItems | append $subItem }}
+                                        {{ end }}
+                                    {{ end }}
+                                    
+                                    {{/* Sort by file path (directory structure) */}}
+                                    {{ $sortedSubItems := sort $subItems "Path" "asc" }}
+                                    
+                                    {{ range $sortedSubItems }}
+                                        {{ $subPage := .Page }}
+                                        {{ $subActive := in $currentPage.RelPermalink $subPage.RelPermalink }}
+                                        
+                                        {{ if eq .Type "subsection" }}
+                                            {{/* Subsection with nested content */}}
+                                            <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $subActive }}current active{{ end }}">
+                                                <button class="btn">
+                                                    {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                                        <i class="material-icons me-2">{{- $subPage.Params.icon | default "folder" }}</i>
+                                                    {{ end }}
+                                                    {{- $subPage.Title }}
+                                                </button>
+                                                <div class="sidebar-submenu {{ if $subActive }}d-block{{ end }}">
+                                                    <ul>
+                                                        {{/* Process pages in subsection, sorted by file path */}}
+                                                        {{ $nestedItems := slice }}
+                                                        {{ range $subPage.Pages }}
+                                                            {{ $nestedItem := dict 
+                                                                "Page" .
+                                                                "Path" .File.Dir
+                                                                "Title" .Title
+                                                            }}
+                                                            {{ $nestedItems = $nestedItems | append $nestedItem }}
+                                                        {{ end }}
+                                                        {{ range sort $nestedItems "Path" "asc" }}
+                                                            {{ $pageActive := in $currentPage.RelPermalink .Page.RelPermalink }}
+                                                            <li class="{{ if $pageActive }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}">
+                                                                <a class="sidebar-nested-link" href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>
+                                                            </li>
+                                                        {{ end }}
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        {{ else }}
+                                            {{/* Direct page */}}
+                                            <li class="{{ if $subActive }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}">
+                                                <a class="sidebar-nested-link" href="{{ $subPage.Permalink }}">{{ $subPage.Title }}</a>
+                                            </li>
+                                        {{ end }}
+                                    {{ end }}
+                                </ul>
+                            </div>
+                        </li>
+                    {{ else }}
+                        {{/* Section without children */}}
+                        <li class="{{ if $active }}current{{ end }}">
+                            <a class="sidebar-root-link" href="{{ $sectionPage.Permalink }}">
+                                {{ if eq .Site.Params.docs.sidebarIcons true -}}
+                                    <i class="material-icons me-2">{{ $sectionPage.Params.icon }}</i>
+                                {{ end }}
+                                {{ $sectionPage.Title }}
+                            </a>
+                        </li>
+                    {{ end }}
+                {{ end }}
+            {{ else }}
+                {{/* Use original weight-based ordering */}}
+                {{ range (where .Site.Sections.ByWeight "Section" "in" $section) }}
+                    {{ $child_pages := union .Sections .Pages }}
+                    {{ range $child_pages.ByWeight }}
                     {{ if or (.Sections) (.Pages) }}
                     {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                         <li class="sidebar-dropdown {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
@@ -110,6 +230,7 @@
                     {{ end }}
                 {{ end }}
             {{ end }}
+        {{ end }}
         </ul>
         <!-- sidebar-menu  -->
     </div>
