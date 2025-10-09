@@ -1,0 +1,66 @@
+{{/*
+  Universal shortcode for creating language-relative links
+  
+  Usage: {{< link path="integrations/media/about" text="About Media Integration" >}}
+  Or:    {{< link path="integrations/media/about" >}}About Media Integration{{< /link >}}
+  Or:    {{< link url="https://example.com" text="External Link" >}}
+  
+  Parameters:
+  - path: The path relative to /docs/ (without leading slash) - for internal links
+  - url: Full URL for external links
+  - text: The link text (optional if using paired shortcode)
+  - class: CSS class to add to the link
+*/}}
+
+{{- $path := .Get "path" -}}
+{{- $url := .Get "url" -}}
+{{- $text := .Get "text" -}}
+{{- $class := .Get "class" -}}
+{{- $innerText := .Inner -}}
+
+{{- if not $path and not $url -}}
+  {{- errorf "link shortcode: either 'path' or 'url' parameter is required" -}}
+{{- end -}}
+
+{{- if $path and $url -}}
+  {{- errorf "link shortcode: cannot specify both 'path' and 'url' parameters" -}}
+{{- end -}}
+
+{{- /* Determine the final URL */ -}}
+{{- $finalUrl := $url -}}
+{{- if $path -}}
+  {{- /* Remove leading slash if present */ -}}
+  {{- $path = strings.TrimPrefix "/" $path -}}
+  {{- $path = strings.TrimPrefix "docs/" $path -}}
+  {{- /* Build the language-relative URL */ -}}
+  {{- $finalUrl = printf "/%s/docs/%s" .Site.LanguageCode $path -}}
+{{- end -}}
+
+{{- /* Determine the link text */ -}}
+{{- $linkText := $text -}}
+{{- if and (not $text) $innerText -}}
+  {{- $linkText = strings.TrimSpace $innerText -}}
+{{- end -}}
+
+{{- if not $linkText -}}
+  {{- errorf "link shortcode: 'text' parameter or inner content is required" -}}
+{{- end -}}
+
+{{- /* Build the link attributes */ -}}
+{{- $attrs := slice -}}
+{{- if $class -}}
+  {{- $attrs = $attrs | append (printf `class="%s"` $class) -}}
+{{- end -}}
+
+{{- /* Check if it's an external link */ -}}
+{{- if $url -}}
+  {{- $attrs = $attrs | append `target="_blank" rel="noopener noreferrer"` -}}
+{{- end -}}
+
+{{- /* Build the final link */ -}}
+{{- $linkAttrs := strings.TrimSpace (delimit $attrs " ") -}}
+{{- if $linkAttrs -}}
+  <a href="{{ $finalUrl }}" {{ $linkAttrs | safeHTMLAttr }}>{{ $linkText }}</a>
+{{- else -}}
+  <a href="{{ $finalUrl }}">{{ $linkText }}</a>
+{{- end -}}

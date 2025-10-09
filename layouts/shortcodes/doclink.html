@@ -1,0 +1,52 @@
+{{/*
+  Shortcode for creating language-relative internal documentation links
+  Uses absolute paths starting with /docs/ which Hugo automatically converts to language-relative URLs
+
+  Usage: {{< doclink path="/docs/advanced/debug-logging" text="Debug Logging" >}}
+  Or:    {{< doclink path="/docs/advanced/debug-logging" >}}Debug Logging{{< /doclink >}}
+
+  Parameters:
+  - path: The absolute path starting with /docs/ (e.g., "/docs/advanced/debug-logging")
+  - text: The link text (optional if using paired shortcode)
+  - class: Optional CSS class for the <a> tag
+  - id: Optional ID for the <a> tag
+  - target: Optional target attribute (e.g., "_blank")
+  - rel: Optional rel attribute (e.g., "noopener noreferrer")
+*/}}
+
+{{- $path := .Get "path" -}}
+{{- $text := .Get "text" -}}
+{{- $innerText := .Inner -}}
+{{- $class := .Get "class" -}}
+{{- $id := .Get "id" -}}
+{{- $target := .Get "target" -}}
+{{- $rel := .Get "rel" -}}
+
+{{- if not $path -}}
+  {{- errorf "doclink shortcode: 'path' parameter is required" -}}
+{{- end -}}
+
+{{- /* Ensure path starts with /docs/ */ -}}
+{{- if not (hasPrefix $path "/docs/") -}}
+  {{- $path = printf "/docs%s" $path -}}
+{{- end -}}
+
+{{- /* Build the language-relative URL manually */ -}}
+{{- $url := printf "/%s%s" .Site.LanguageCode $path -}}
+
+{{- /* Determine the link text */ -}}
+{{- $linkText := $text -}}
+{{- if and (not $text) $innerText -}}
+  {{- $linkText = strings.TrimSpace $innerText -}}
+{{- end -}}
+
+{{- if not $linkText -}}
+  {{- errorf "doclink shortcode: 'text' parameter or inner content is required" -}}
+{{- end -}}
+
+<a href="{{ $url }}"
+  {{- with $class }} class="{{ . }}"{{ end -}}
+  {{- with $id }} id="{{ . }}"{{ end -}}
+  {{- with $target }} target="{{ . }}"{{ end -}}
+  {{- with $rel }} rel="{{ . }}"{{ end -}}
+>{{ $linkText }}</a>
