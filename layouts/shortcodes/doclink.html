@@ -1,12 +1,12 @@
 {{/*
   Shortcode for creating language-relative internal documentation links
-  Uses absolute paths starting with /docs/ which Hugo automatically converts to language-relative URLs
+  Uses Hugo's relLangURL function to automatically convert paths to language-relative URLs
 
-  Usage: {{< doclink path="/docs/advanced/debug-logging" text="Debug Logging" >}}
-  Or:    {{< doclink path="/docs/advanced/debug-logging" >}}Debug Logging{{< /doclink >}}
+  Usage: {{< doclink path="advanced/debug-logging" text="Debug Logging" >}}
+  Or:    {{< doclink path="advanced/debug-logging" >}}Debug Logging{{< /doclink >}}
 
   Parameters:
-  - path: The absolute path starting with /docs/ (e.g., "/docs/advanced/debug-logging")
+  - path: The path relative to /docs/ (e.g., "advanced/debug-logging")
   - text: The link text (optional if using paired shortcode)
   - class: Optional CSS class for the <a> tag
   - id: Optional ID for the <a> tag
@@ -26,13 +26,14 @@
   {{- errorf "doclink shortcode: 'path' parameter is required" -}}
 {{- end -}}
 
-{{- /* Ensure path starts with /docs/ */ -}}
-{{- if not (hasPrefix $path "/docs/") -}}
-  {{- $path = printf "/docs%s" $path -}}
+{{- /* Ensure path starts with / and prepend /docs/ */ -}}
+{{- if not (hasPrefix $path "/") -}}
+  {{- $path = printf "/%s" $path -}}
 {{- end -}}
+{{- $path = printf "/docs%s" $path -}}
 
-{{- /* Build the language-relative URL manually */ -}}
-{{- $url := printf "/%s%s" .Site.LanguageCode $path -}}
+{{- /* Use Hugo's relLangURL function to automatically add language prefix */ -}}
+{{- $url := $path | relLangURL -}}
 
 {{- /* Determine the link text */ -}}
 {{- $linkText := $text -}}
