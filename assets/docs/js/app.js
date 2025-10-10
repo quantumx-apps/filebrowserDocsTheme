@@ -118,27 +118,91 @@ function activateSidebarMenu() {
     }
 }
 
-if (document.getElementById("close-sidebar")) {
-    document.getElementById("close-sidebar").addEventListener("click", function () {
-        document.getElementsByClassName("page-wrapper")[0].classList.toggle("toggled");
+// Sidebar state management with localStorage
+function initSidebarState() {
+    const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
+    const closeSidebar = document.getElementById("close-sidebar");
+    
+    console.log('🔍 Sidebar Debug - initSidebarState called');
+    console.log('pageWrapper:', pageWrapper);
+    console.log('closeSidebar:', closeSidebar);
+    
+    if (!pageWrapper || !closeSidebar) {
+        console.log('❌ Missing elements, returning early');
+        return;
+    }
+    
+    // Get saved sidebar state from localStorage (default: enabled)
+    const savedState = localStorage.getItem('sidebar-disabled');
+    const isSidebarDisabled = savedState === 'true';
+    
+    console.log('📦 localStorage sidebar-disabled:', savedState);
+    console.log('🔍 isSidebarDisabled:', isSidebarDisabled);
+    console.log('🎯 Initial pageWrapper classes:', pageWrapper.className);
+    
+    // Set sidebar state based on localStorage
+    if (isSidebarDisabled) {
+        // User previously disabled sidebar - keep it disabled (no toggled class)
+        pageWrapper.classList.remove("toggled");
+        console.log('🔒 Applied disabled state from localStorage, classes now:', pageWrapper.className);
+    } else {
+        // Default state - ensure sidebar is enabled (add toggled class)
+        pageWrapper.classList.add("toggled");
+        console.log('🔓 Applied enabled state (default), classes now:', pageWrapper.className);
+    }
+    
+    // Add click listener to toggle sidebar and save state
+    closeSidebar.addEventListener("click", function () {
+        console.log('🖱️ Sidebar toggle clicked');
+        console.log('Before toggle - classes:', pageWrapper.className);
+        
+        pageWrapper.classList.toggle("toggled");
+        
+        console.log('After toggle - classes:', pageWrapper.className);
+        
+        // Save current state to localStorage (store disabled state)
+        const isCurrentlyDisabled = !pageWrapper.classList.contains("toggled");
+        console.log('isCurrentlyDisabled:', isCurrentlyDisabled);
+        
+        if (isCurrentlyDisabled) {
+            localStorage.setItem('sidebar-disabled', 'true');
+            console.log('💾 Saved disabled state to localStorage');
+        } else {
+            localStorage.removeItem('sidebar-disabled'); // Remove key when enabled (default)
+            console.log('🗑️ Removed disabled state from localStorage');
+        }
     });
 }
+
+// Initialize sidebar state when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initSidebarState();
+});
 
 // Close Sidebar (mobile)
 if (!window.matchMedia('(min-width: 1024px)').matches) {
     if (document.getElementById("close-sidebar")) {
         const closeSidebar = document.getElementById("close-sidebar");
         const sidebar = document.getElementById("sidebar");
+        const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
         const sidebarMenuLinks = Array.from(document.querySelectorAll(".sidebar-root-link,.sidebar-nested-link"));
+
+        // Function to close sidebar and save state
+        function closeSidebarAndSave() {
+            pageWrapper.classList.remove("toggled");
+            localStorage.setItem('sidebar-disabled', 'true');
+        }
+
         // Close sidebar by clicking outside
         document.addEventListener('click', function(elem) {
             if (!closeSidebar.contains(elem.target) && !sidebar.contains(elem.target))
-                document.getElementsByClassName("page-wrapper")[0].classList.add("toggled");
+                closeSidebarAndSave();
         });
+
         // Close sidebar immediately when clicking sidebar menu item
         sidebarMenuLinks.forEach(menuLink => {
             menuLink.addEventListener("click", function () {
-              document.getElementsByClassName("page-wrapper")[0].classList.add("toggled");
+                closeSidebarAndSave();
             });
         });
     }
@@ -340,9 +404,14 @@ function initTocScrollSpy() {
 
         // Get the scrollable container (content-docs-wrapper)
         const scrollContainer = document.querySelector('.content-docs-wrapper');
-        const scrollPosition = scrollContainer ? scrollContainer.scrollTop + 100 : window.scrollY + 100; // Offset for better UX
+        const scrollPosition = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
 
-        // Find the section currently in view
+        // Convert 10em to pixels dynamically based on the current font size
+        const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const offsetPixels = fontSize * 10; // 10em offset
+        const adjustedScrollPosition = scrollPosition + offsetPixels;
+
+        // Find the section currently in view with improved detection
         for (let i = sections.length - 1; i >= 0; i--) {
             const section = sections[i];
             const rect = section.element.getBoundingClientRect();
@@ -352,7 +421,8 @@ function initTocScrollSpy() {
                 rect.top + scrollContainer.scrollTop :
                 rect.top + window.scrollY;
 
-            if (scrollPosition >= elementTop) {
+            // Check if the adjusted scroll position has reached this section
+            if (adjustedScrollPosition >= elementTop) {
                 current = section.id;
                 break;
             }
@@ -402,12 +472,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle hash-based scroll (used for both startup and TOC clicks)
     function scrollToHash(hash, delay = 0) {
         if (!hash) return;
-        
+
         const targetElement = document.querySelector(hash);
         if (targetElement) {
             const scrollFunction = () => {
                 const scrollContainer = document.querySelector('.content-docs-wrapper');
-                const headerOffset = 100; // Account for header
+                // Convert 12em to pixels dynamically (2em higher than TOC detection)
+                const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+                const headerOffset = fontSize * 6; // 12em offset (scrolls higher)
 
                 if (scrollContainer) {
                     const elementTop = targetElement.getBoundingClientRect().top + scrollContainer.scrollTop;
@@ -445,16 +517,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Intercept TOC link clicks to update hash and trigger scroll
     function handleTocClicks() {
         const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
-        
+
         tocLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
                 if (href && href.startsWith('#')) {
                     e.preventDefault(); // Prevent default anchor behavior
-                    
+
                     // Update the URL hash
                     window.history.pushState(null, null, href);
-                    
+
                     // Trigger our custom scroll function
                     scrollToHash(href);
                 }
@@ -464,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Run hash scroll on page load
     handleHashScroll();
-    
+
     // Set up TOC click handlers
     handleTocClicks();
 

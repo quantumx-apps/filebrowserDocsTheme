@@ -62,7 +62,7 @@
         </div>
     </div>
     <!-- FlexSearch Input Start -->
-    {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
+    {{ if or (not (and .Site.Params.flexsearch (isset .Site.Params.flexsearch "enabled"))) (and .Site.Params.flexsearch (eq .Site.Params.flexsearch.enabled true)) -}}
         {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
         {{ else }}
             <!-- Overlay background -->
@@ -89,7 +89,7 @@
 <!-- Top Header -->
 
 <!-- Fixed Position Search Button -->
-{{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
+{{ if or (not (and .Site.Params.flexsearch (isset .Site.Params.flexsearch "enabled"))) (and .Site.Params.flexsearch (eq .Site.Params.flexsearch.enabled true)) -}}
     {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
     {{ else }}
         <div id="fixed-search-button" class="fixed-search-button">

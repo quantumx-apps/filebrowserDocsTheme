@@ -180,7 +180,7 @@
     // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
 
     {{ $list := slice }}
-    {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
+    {{- if and .Site.Params.flexsearch (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
         {{- if eq .Site.Params.flexsearch.searchSectionsIndex "ALL" }}
             {{- $list = .Site.Pages }}
         {{- else }}

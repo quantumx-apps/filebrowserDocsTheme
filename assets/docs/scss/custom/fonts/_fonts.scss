@@ -1,7 +1,47 @@
 /* 
+ * Roboto and Material Icons fonts are loaded locally for better performance
  * Nunito and Source Code Pro fonts are loaded via Google Fonts (see google-fonts.html partial)
- * Original local font references commented out as font files are not present in theme
  */
+
+/* roboto-normal - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(''),
+       url('/fonts/roboto-normal-latin.woff2') format('woff2');
+}
+
+/* roboto-medium - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local(''),
+       url('/fonts/roboto-medium-latin.woff2') format('woff2');
+}
+
+/* roboto-bold - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local(''),
+       url('/fonts/roboto-bold-latin.woff2') format('woff2');
+}
+
+/* material-icons - latin */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(''),
+       url('/fonts/material-icons.woff2') format('woff2');
+}
 
 /* nunito-300 - latin */
 // @font-face {

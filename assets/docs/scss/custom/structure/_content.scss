@@ -40,6 +40,10 @@
 .docs-content {
     order: 1;
     padding-bottom: 1em;
+    width: calc(100% - 18em);
+    @media (max-width: 1200px) {
+        width: 100%;
+    }
 }
 
 // Links

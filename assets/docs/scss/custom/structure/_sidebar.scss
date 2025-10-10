@@ -61,11 +61,11 @@
 
 .content-docs-wrapper {
     overflow: auto;
-    
+
     // Hide scrollbar while keeping scroll functionality
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
-    
+
     &::-webkit-scrollbar {
         display: none; /* WebKit */
     }
@@ -74,6 +74,7 @@
 .page-wrapper {
     height: 100vh;
     .sidebar-wrapper {
+        backdrop-filter: saturate(180%) blur(5px);
         // box-shadow: $shadow;
         // border-right: 1px solid var(--sidebar-border-color);
         transition: all 0.3s ease;
@@ -133,7 +134,6 @@
             background: var(--sidebar-scrollbar-thumb-color);
         }
         .sidebar-brand {
-            background: var(--sidebar-bg);
             padding: 10px 20px;
             border-bottom: 1px solid var(--sidebar-border-color);
             display: flex;

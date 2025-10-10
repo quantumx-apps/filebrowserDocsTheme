@@ -19,21 +19,21 @@
         <ul class="sidebar-menu">
             {{ $currentPage := . -}}
             {{ $section := $currentPage.Section -}}
-            
+
                 {{/* Use the custom auto-ordering system that respects manual weights */}}
                 {{ $sortedItems := partial "docs/auto-order.html" . }}
-                
-            
+
+
             {{ $sidebarIcons := .Site.Params.docs.sidebarIcons }}
             {{ range $sortedItems }}
                 {{ $page := .Page }}
                 {{ $active := in $currentPage.RelPermalink $page.RelPermalink }}
                 {{ $hasChildren := or $page.Sections $page.Pages }}
-                
-                
+
+
                 {{ if eq .Type "section" }}
                     {{ if $hasChildren }}
-                        <li class="sidebar-dropdown {{ if eq $sidebarIcons true -}}HAS-ICONS{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
+                        <li class="sidebar-dropdown {{ if eq $sidebarIcons false -}}no-icon{{ end }} {{ if $active }}current active{{ end }}">
                             <button class="btn">
                                 {{ if eq $sidebarIcons true -}}
                                     <i class="material-icons me-2">{{- $page.Params.icon | default "notes" }}</i>
@@ -47,7 +47,7 @@
                                         {{ if and (eq .Type "subsection") (in $page.Sections .Page) }}
                                             {{ $subPage := .Page }}
                                             {{ $subActive := in $currentPage.RelPermalink $subPage.RelPermalink }}
-                                            <li class="sidebar-dropdown nested {{ if eq $sidebarIcons true -}}HAS-ICONS{{ else }}no-icon{{ end }} {{ if $subActive }}current active{{ end }}">
+                                            <li class="sidebar-dropdown nested {{ if eq $sidebarIcons false -}}no-icon{{ end }} {{ if $subActive }}current active{{ end }}">
                                                 <button class="btn">
                                                     {{ if eq $sidebarIcons true -}}
                                                         <i class="material-icons me-2">{{- $subPage.Params.icon | default "folder" }}</i>
@@ -60,7 +60,7 @@
                                                         {{ range $sortedItems }}
                                                             {{ if and (eq .Type "page") (and .ParentSubsection (eq .ParentSubsection.RelPermalink $subPage.RelPermalink)) }}
                                                                 {{ $pageActive := in $currentPage.RelPermalink .Page.RelPermalink }}
-                                                                <li class="{{ if $pageActive }}current{{ end }} {{ if eq $sidebarIcons true -}}HAS-ICONS{{ else }}no-icon{{ end }}">
+                                                                <li class="{{ if $pageActive }}current{{ end }} {{ if eq $sidebarIcons false -}}no-icon{{ end }}">
                                                                     <a class="sidebar-nested-link" href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>
                                                                 </li>
                                                             {{ end }}
@@ -70,7 +70,7 @@
                                             </li>
                                         {{ else if and (eq .Type "page") (in $page.Pages .Page) }}
                                             {{ $pageActive := in $currentPage.RelPermalink .Page.RelPermalink }}
-                                            <li class="{{ if $pageActive }}current{{ end }} {{ if eq $sidebarIcons true -}}HAS-ICONS{{ else }}no-icon{{ end }}">
+                                            <li class="{{ if $pageActive }}current{{ end }} {{ if eq $sidebarIcons false -}}no-icon{{ end }}">
                                                 <a class="sidebar-nested-link" href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>
                                             </li>
                                         {{ end }}
@@ -92,9 +92,9 @@
                 {{ end }}
             {{ end }}
         </ul>
-        
+
     </div>
-    
+
     <!-- Sidebar Footer -->
         <ul class="sidebar-footer list-unstyled mb-0">
             <!-- <li class="list-inline-item mb-0">
