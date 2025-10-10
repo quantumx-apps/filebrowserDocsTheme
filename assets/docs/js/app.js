@@ -142,11 +142,11 @@ function initSidebarState() {
     
     // Set sidebar state based on localStorage
     if (isSidebarDisabled) {
-        // User previously disabled sidebar - keep it disabled (no toggled class)
+        // User previously disabled sidebar - remove toggled class to hide sidebar
         pageWrapper.classList.remove("toggled");
         console.log('🔒 Applied disabled state from localStorage, classes now:', pageWrapper.className);
     } else {
-        // Default state - ensure sidebar is enabled (add toggled class)
+        // Default state - ensure sidebar is enabled (keep toggled class)
         pageWrapper.classList.add("toggled");
         console.log('🔓 Applied enabled state (default), classes now:', pageWrapper.className);
     }
@@ -517,16 +517,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Intercept TOC link clicks to update hash and trigger scroll
     function handleTocClicks() {
         const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
-
+        
         tocLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
                 if (href && href.startsWith('#')) {
                     e.preventDefault(); // Prevent default anchor behavior
-
+                    
                     // Update the URL hash
                     window.history.pushState(null, null, href);
-
+                    
                     // Trigger our custom scroll function
                     scrollToHash(href);
                 }
@@ -534,11 +534,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Intercept all anchor link clicks in the content area
+    function handleAnchorClicks() {
+        const contentArea = document.querySelector('.main-content');
+        if (!contentArea) return;
+        
+        contentArea.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href^="#"]');
+            if (link) {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    
+                    // Update the URL hash
+                    window.history.pushState(null, null, href);
+                    
+                    // Trigger our custom scroll function
+                    scrollToHash(href);
+                }
+            }
+        });
+    }
+
     // Run hash scroll on page load
     handleHashScroll();
-
+    
     // Set up TOC click handlers
     handleTocClicks();
+    
+    // Set up anchor link click handlers
+    handleAnchorClicks();
 
     // Test function to manually test TOC styling
     window.testTocStyling = function() {

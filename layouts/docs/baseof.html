@@ -19,7 +19,7 @@
         {{ end }}
 
         <div class="content-docs-wrapper">
-            <div class="page-wrapper">
+            <div class="page-wrapper toggled">
                 {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "sidebar.html") . -}}
                     <!-- Start Page Content -->
                     {{ if site.Params.docs.toc | default true }}
