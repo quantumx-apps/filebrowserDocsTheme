@@ -199,7 +199,7 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
     // Primary color matching FileBrowser
     --primary: var(--blue);
-    
+
     --secondary: var(--gray-600);
     --success: var(--green);
     --info: var(--cyan);
@@ -207,7 +207,8 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
     --danger: var(--red);
     --light: var(--gray-100);
     // --dark: #0e1420;
-    --dark: #181921;
+    --dark: #141D24;
+    --dark-filebrowser: rgba(40, 49, 54, 0.95);
     // --dark: #241c2d;
     --dark-alt: #212529;
     --dark-secondary: #292a35;
@@ -246,8 +247,7 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
     --body-color: var(--text-default);
 
-    --body-bg: #ffffff;
-    
+    --body-bg: white;
     // FileBrowser surface colors (light mode)
     --surfacePrimary: gray;
     --surfaceSecondary: lightgray;
@@ -314,7 +314,7 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
     // Sidebar (FileBrowser style)
     --sidebar-primary: var(--primary);
-    --sidebar-bg: var(--white);
+    --sidebar-bg: whitesmoke;
     --top-header-bg: rgba(242, 242, 242, 0.95); // Moon grey with transparency
     --sidebar-text-color: #546e7a;
     --sidebar-border-color: #e0e0e0;
@@ -335,7 +335,6 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
     --text-default-inv: var(--text-dark);
     --text-muted: rgba(255, 255, 255, 0.6);
     --#{$prefix}secondary-color: #6c757d;
-    
     // FileBrowser surface colors (dark mode)
     --surfacePrimary: #20292F;
     --surfaceSecondary: #3A4147;
@@ -364,8 +363,8 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
     // sidebar (FileBrowser dark mode)
     --sidebar-primary: var(--primary);
-    --sidebar-bg: var(--dark);
-    --top-header-bg: rgba(40, 49, 54, 0.95); // #283136 with transparency
+    --sidebar-bg: var(--dark-filebrowser);
+    --top-header-bg: var(--dark-filebrowser); // #283136 with transparency
     --sidebar-text-color: rgba(255, 255, 255, 0.87);
     --sidebar-border-color: rgba(255, 255, 255, 0.12);
     --sidebar-dropdown-hover-bg: #3A4147;

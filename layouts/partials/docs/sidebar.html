@@ -34,7 +34,8 @@
                     }}
                     {{ $sortedSections = $sortedSections | append $item }}
                 {{ end }}
-                {{ $sortedSections = sort $sortedSections "Path" "asc" }}
+                {{/* Sort sections with custom order support */}}
+                {{ $sortedSections = partial "docs/sort-items.html" (dict "items" $sortedSections) }}
                 
                 {{ range $sortedSections }}
                     {{ $sectionPage := .Page }}
@@ -78,8 +79,8 @@
                                         {{ end }}
                                     {{ end }}
                                     
-                                    {{/* Sort by file path (directory structure) */}}
-                                    {{ $sortedSubItems := sort $subItems "Path" "asc" }}
+                                    {{/* Sort by custom order, then by file path */}}
+                                    {{ $sortedSubItems := partial "docs/sort-items.html" (dict "items" $subItems) }}
                                     
                                     {{ range $sortedSubItems }}
                                         {{ $subPage := .Page }}
@@ -106,7 +107,9 @@
                                                             }}
                                                             {{ $nestedItems = $nestedItems | append $nestedItem }}
                                                         {{ end }}
-                                                        {{ range sort $nestedItems "Path" "asc" }}
+                                                        {{/* Sort by custom order, then by file path */}}
+                                                        {{ $sortedNestedItems := partial "docs/sort-items.html" (dict "items" $nestedItems) }}
+                                                        {{ range $sortedNestedItems }}
                                                             {{ $pageActive := in $currentPage.RelPermalink .Page.RelPermalink }}
                                                             <li class="{{ if $pageActive }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}">
                                                                 <a class="sidebar-nested-link" href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>

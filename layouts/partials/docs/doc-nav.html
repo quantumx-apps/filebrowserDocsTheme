@@ -27,7 +27,8 @@
 				{{ end }}
 			{{ end }}
 		{{ end }}
-		{{ $sameDirPages = sort $sameDirPages "Path" "asc" }}
+		{{/* Sort by custom order field, then by path */}}
+		{{ $sameDirPages = partial "docs/sort-items.html" (dict "items" $sameDirPages) }}
 		
 		{{/* Find current page index in same directory */}}
 		{{ $currentIndex := -1 }}
@@ -67,7 +68,8 @@
 						{{ end }}
 					{{ end }}
 				{{ end }}
-				{{ $siblingPages = sort $siblingPages "Path" "asc" }}
+				{{/* Sort by custom order field, then by path */}}
+				{{ $siblingPages = partial "docs/sort-items.html" (dict "items" $siblingPages) }}
 				
 				{{/* Find current page index in sibling pages */}}
 				{{ $currentSiblingIndex := -1 }}

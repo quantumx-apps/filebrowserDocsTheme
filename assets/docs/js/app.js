@@ -257,3 +257,172 @@ var sanitizeHTML = function (str) {
 		return '&#' + c.charCodeAt(0) + ';';
 	});
 };
+
+// Table of Contents Scroll Spy
+function initTocScrollSpy() {
+    console.log('🔍 Initializing TOC Scroll Spy...');
+    
+    const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
+    console.log('📋 Found TOC links:', tocLinks.length);
+    
+    const sections = [];
+    
+    // Get all sections that have corresponding TOC links
+    tocLinks.forEach((link, index) => {
+        const href = link.getAttribute('href');
+        console.log(`🔗 TOC Link ${index}:`, href);
+        
+        if (href && href.startsWith('#')) {
+            const id = href.substring(1);
+            const section = document.getElementById(id);
+            console.log(`🎯 Looking for section with id "${id}":`, section ? 'Found' : 'Not found');
+            
+            if (section) {
+                sections.push({
+                    id: id,
+                    element: section,
+                    link: link
+                });
+            }
+        }
+    });
+    
+    console.log('📊 Total sections found:', sections.length);
+    console.log('📝 Sections:', sections.map(s => s.id));
+    
+    if (sections.length === 0) {
+        console.log('❌ No sections found, exiting TOC scroll spy');
+        return;
+    }
+    
+    // Function to scroll TOC item into view
+    function scrollTocItemIntoView(activeLink) {
+        // Find the actual scrollable TOC container (.docs-toc)
+        const tocContainer = activeLink.closest('.docs-toc');
+        if (!tocContainer) {
+            console.log('❌ TOC container not found');
+            return;
+        }
+        
+        console.log('📦 Found TOC container:', tocContainer);
+        
+        const containerRect = tocContainer.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        
+        console.log('📏 Container rect:', containerRect);
+        console.log('📏 Link rect:', linkRect);
+        
+        // Check if the link is outside the visible area of the TOC container
+        const isAboveView = linkRect.top < containerRect.top;
+        const isBelowView = linkRect.bottom > containerRect.bottom;
+        
+        console.log('👀 Link visibility - Above:', isAboveView, 'Below:', isBelowView);
+        
+        if (isAboveView || isBelowView) {
+            // Calculate the scroll position to center the active link in the TOC container
+            const containerScrollTop = tocContainer.scrollTop;
+            const linkOffsetTop = activeLink.offsetTop;
+            const containerHeight = tocContainer.clientHeight;
+            const linkHeight = activeLink.offsetHeight;
+            
+            // Center the link in the container
+            const targetScrollTop = linkOffsetTop - (containerHeight / 2) + (linkHeight / 2);
+            
+            console.log('🎯 Scroll calculation:', {
+                containerScrollTop,
+                linkOffsetTop,
+                containerHeight,
+                linkHeight,
+                targetScrollTop
+            });
+            
+            // Smooth scroll to the target position
+            tocContainer.scrollTo({
+                top: Math.max(0, targetScrollTop),
+                behavior: 'smooth'
+            });
+            
+            console.log(`📜 Scrolling TOC to show: ${activeLink.textContent.trim()}`);
+        } else {
+            console.log('✅ Link already in view, no scrolling needed');
+        }
+    }
+    
+    function updateActiveTocLink() {
+        let current = '';
+        const scrollPosition = window.scrollY + 100; // Offset for better UX
+        
+        console.log('📏 Scroll position:', scrollPosition);
+        
+        // Find the section currently in view
+        for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            const rect = section.element.getBoundingClientRect();
+            const elementTop = rect.top + window.scrollY;
+            
+            console.log(`📍 Section "${section.id}": top=${elementTop}, scroll=${scrollPosition}, inView=${scrollPosition >= elementTop}`);
+            
+            if (scrollPosition >= elementTop) {
+                current = section.id;
+                break;
+            }
+        }
+        
+        console.log('🎯 Current active section:', current);
+        
+        // Update active states
+        sections.forEach(section => {
+            if (section.id === current) {
+                console.log(`✅ Activating section: ${section.id}`);
+                section.link.classList.add('active');
+                
+                // Scroll the active TOC item into view
+                scrollTocItemIntoView(section.link);
+            } else {
+                section.link.classList.remove('active');
+            }
+        });
+    }
+    
+    // Initial call
+    console.log('🚀 Running initial TOC update...');
+    updateActiveTocLink();
+    
+    // Listen for scroll events
+    let ticking = false;
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveTocLink();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    
+    console.log('👂 Adding scroll event listener...');
+    window.addEventListener('scroll', requestTick);
+}
+
+// Initialize TOC scroll spy when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initTocScrollSpy();
+    
+    // Test function to manually test TOC styling
+    window.testTocStyling = function() {
+        console.log('🧪 Testing TOC styling...');
+        const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
+        console.log('Found TOC links for testing:', tocLinks.length);
+        
+        tocLinks.forEach((link, index) => {
+            console.log(`Testing link ${index}:`, link.textContent.trim());
+            link.classList.add('active');
+            setTimeout(() => {
+                link.classList.remove('active');
+                console.log(`Removed active class from link ${index}`);
+            }, 2000);
+        });
+    };
+    
+    console.log('💡 You can test TOC styling by running: testTocStyling()');
+});
