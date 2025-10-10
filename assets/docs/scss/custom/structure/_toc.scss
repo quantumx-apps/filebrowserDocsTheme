@@ -76,12 +76,20 @@
 }
 
 .docs-toc {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 6rem;
-    height: calc(100vh - 11.1rem);
+    padding-top: 4em;
+    padding-left: 1rem;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 18em;
     overflow-y: auto;
+    overflow-x: hidden;
     order: 2;
+    z-index: 10;
+    background: var(--sidebar-bg);
+
+    border-left: 1px solid var(--sidebar-border-color);
 
     // visually-hidden
     @media (max-width: 1199px) {

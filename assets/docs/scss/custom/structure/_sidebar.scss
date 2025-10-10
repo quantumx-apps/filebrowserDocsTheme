@@ -59,6 +59,18 @@
     }
 }
 
+.content-docs-wrapper {
+    overflow: auto;
+    
+    // Hide scrollbar while keeping scroll functionality
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    
+    &::-webkit-scrollbar {
+        display: none; /* WebKit */
+    }
+}
+
 .page-wrapper {
     height: 100vh;
     .sidebar-wrapper {
@@ -399,7 +411,7 @@
         background-color: var(--body-bg) !important; // Override bg-transparent
 
         .layout-spacing {
-            padding: 24px 14px 24px !important;
+            padding: 0;
             min-height: calc(100vh - 66px) !important;
             position: relative;
 
