@@ -56,7 +56,7 @@
         background-color: var(--surfaceSecondary, #3A4147);
         border-color: var(--surfaceSecondary, #3A4147);
 
-        &:focus-within {
+        &.search-expanded {
             background-color: var(--surfacePrimary, #20292F);
             border-color: white;
         }
@@ -109,7 +109,7 @@
     .flexsearch-container .flexsearch {
         background-color: var(--surfaceSecondary, #3A4147);
 
-        &:focus-within {
+        &.search-expanded {
             background-color: var(--surfacePrimary, #20292F);
         }
     }
@@ -267,12 +267,13 @@ body.search-overlay-active .fixed-search-button {
     .flexsearch-wrapper {
         display: flex;
         flex-direction: column;
+        align-items: center;
         width: 30em;
         max-width: 90vw;
         margin: 0;
         padding: 0;
 
-        &:focus-within {
+        &.search-expanded {
             transition: width 0.3s ease;
 
             @media (min-width: 769px) {
@@ -283,7 +284,7 @@ body.search-overlay-active .fixed-search-button {
         @media (max-width: 768px) {
             width: 12em;
 
-            &:focus-within {
+            &.search-expanded {
                 width: 90vw;
             }
         }
@@ -300,7 +301,7 @@ body.search-overlay-active .fixed-search-button {
         text-align: left;
         width: 30em;
 
-        &:focus-within {
+        &.search-expanded {
             background-color: rgba(255, 255, 255, 1);
             transition: width 0.3s ease, background-color 0s;
 

@@ -193,13 +193,14 @@ window.addEventListener('scroll', (ev) => {
 
 // back-to-top
 var mybutton = document.getElementById("back-to-top");
-window.onscroll = function () {
-    scrollFunction();
-};
 
 function scrollFunction() {
     if (mybutton != null) {
-        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+        // Get the scrollable container (content-docs-wrapper)
+        const scrollContainer = document.querySelector('.content-docs-wrapper');
+        const scrollPosition = scrollContainer ? scrollContainer.scrollTop : (document.body.scrollTop || document.documentElement.scrollTop);
+
+        if (scrollPosition > 500) {
             mybutton.style.display = "block";
         } else {
             mybutton.style.display = "none";
@@ -207,9 +208,32 @@ function scrollFunction() {
     }
 }
 
+// Set up scroll listeners for both window and content-docs-wrapper
+window.onscroll = function () {
+    scrollFunction();
+};
+
+// Also listen to content-docs-wrapper scroll events
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollContainer = document.querySelector('.content-docs-wrapper');
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', scrollFunction);
+    }
+});
+
 function topFunction() {
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
+    // Try to scroll the content-docs-wrapper container first
+    const scrollContainer = document.querySelector('.content-docs-wrapper');
+    if (scrollContainer) {
+        scrollContainer.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    } else {
+        // Fallback to window scroll
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
 }
 
 // dd-menu
@@ -257,3 +281,202 @@ var sanitizeHTML = function (str) {
 		return '&#' + c.charCodeAt(0) + ';';
 	});
 };
+
+// Table of Contents Scroll Spy
+function initTocScrollSpy() {
+    const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
+    const sections = [];
+
+    // Get all sections that have corresponding TOC links
+    tocLinks.forEach((link) => {
+        const href = link.getAttribute('href');
+
+        if (href && href.startsWith('#')) {
+            const id = href.substring(1);
+            const section = document.getElementById(id);
+
+            if (section) {
+                sections.push({
+                    id: id,
+                    element: section,
+                    link: link
+                });
+            }
+        }
+    });
+
+    if (sections.length === 0) {
+        return;
+    }
+
+    // Function to scroll TOC item into view
+    function scrollTocItemIntoView(activeLink) {
+        const tocContainer = document.querySelector('.docs-toc');
+        if (!tocContainer) return;
+
+        // Simple approach: scroll to position the link with some offset
+        const linkOffsetTop = activeLink.offsetTop;
+        const offset = 120; // 120px offset to position link lower (7.5em)
+        const targetScrollTop = Math.max(0, linkOffsetTop - offset);
+
+        // Only scroll if the link is not already visible
+        const containerRect = tocContainer.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+
+        // Check if link is above or below the visible area
+        const isAboveView = linkRect.top < containerRect.top;
+        const isBelowView = linkRect.bottom > containerRect.bottom ;
+
+        if (isAboveView || isBelowView) {
+            tocContainer.scrollTo({
+                top: targetScrollTop,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    function updateActiveTocLink() {
+        let current = '';
+
+        // Get the scrollable container (content-docs-wrapper)
+        const scrollContainer = document.querySelector('.content-docs-wrapper');
+        const scrollPosition = scrollContainer ? scrollContainer.scrollTop + 100 : window.scrollY + 100; // Offset for better UX
+
+        // Find the section currently in view
+        for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            const rect = section.element.getBoundingClientRect();
+
+            // Calculate element position relative to the scroll container
+            const elementTop = scrollContainer ?
+                rect.top + scrollContainer.scrollTop :
+                rect.top + window.scrollY;
+
+            if (scrollPosition >= elementTop) {
+                current = section.id;
+                break;
+            }
+        }
+
+        // Update active states
+        sections.forEach(section => {
+            if (section.id === current) {
+                section.link.classList.add('active');
+
+                // Scroll the active TOC item into view
+                scrollTocItemIntoView(section.link);
+            } else {
+                section.link.classList.remove('active');
+            }
+        });
+    }
+
+    // Initial call
+    updateActiveTocLink();
+
+    // Listen for scroll events
+    let ticking = false;
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveTocLink();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+
+    // Get the scrollable container and add event listener to it
+    const scrollContainer = document.querySelector('.content-docs-wrapper');
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', requestTick);
+    } else {
+        window.addEventListener('scroll', requestTick);
+    }
+}
+
+// Initialize TOC scroll spy when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initTocScrollSpy();
+
+    // Handle hash-based scroll (used for both startup and TOC clicks)
+    function scrollToHash(hash, delay = 0) {
+        if (!hash) return;
+        
+        const targetElement = document.querySelector(hash);
+        if (targetElement) {
+            const scrollFunction = () => {
+                const scrollContainer = document.querySelector('.content-docs-wrapper');
+                const headerOffset = 100; // Account for header
+
+                if (scrollContainer) {
+                    const elementTop = targetElement.getBoundingClientRect().top + scrollContainer.scrollTop;
+                    scrollContainer.scrollTo({
+                        top: elementTop - headerOffset,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // Fallback to window scroll
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Adjust for header
+                    window.scrollBy(0, -headerOffset);
+                }
+            };
+
+            if (delay > 0) {
+                setTimeout(scrollFunction, delay);
+            } else {
+                scrollFunction();
+            }
+        }
+    }
+
+    // Handle hash-based scroll on startup
+    function handleHashScroll() {
+        const hash = window.location.hash;
+        if (hash) {
+            scrollToHash(hash, 100); // Small delay for page load
+        }
+    }
+
+    // Intercept TOC link clicks to update hash and trigger scroll
+    function handleTocClicks() {
+        const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
+        
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    
+                    // Update the URL hash
+                    window.history.pushState(null, null, href);
+                    
+                    // Trigger our custom scroll function
+                    scrollToHash(href);
+                }
+            });
+        });
+    }
+
+    // Run hash scroll on page load
+    handleHashScroll();
+    
+    // Set up TOC click handlers
+    handleTocClicks();
+
+    // Test function to manually test TOC styling
+    window.testTocStyling = function() {
+        const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
+
+        tocLinks.forEach((link, index) => {
+            link.classList.add('active');
+            setTimeout(() => {
+                link.classList.remove('active');
+            }, 2000);
+        });
+    };
+});

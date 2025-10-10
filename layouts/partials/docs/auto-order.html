@@ -10,29 +10,43 @@ Usage: {{ partial "docs/auto-order.html" . }}
 {{ $allItems := slice }}
 
 {{/* Process main sections (docs/*) */}}
-{{ range .Site.Sections }}
-  {{ if eq .Section "docs" }}
+{{ $docsSection := .Site.GetPage "docs" }}
+{{ if $docsSection }}
+  {{ range $docsSection.Sections }}
     {{ $weight := 0 }}
-    {{/* Assign weight based on directory name for main sections */}}
-    {{ $sectionWeights := dict 
-      "getting-started" 1
-      "configuration" 2  
-      "access-control" 3
-      "shares" 4
-      "integrations" 5
-      "user-guides" 6
-      "advanced" 7
-      "reference" 8
-      "contributing" 9
-      "help" 10
-    }}
-    {{ $weight = index $sectionWeights .File.Dir | default 999 }}
-    
-    {{ $item := dict 
+    {{ $manualOrder := .Params.order }}
+
+    {{ if $manualOrder }}
+      {{ if lt $manualOrder 0 }}
+        {{/* Negative order: place at bottom with high weight */}}
+        {{ $weight = sub 1000 $manualOrder }}
+      {{ else }}
+        {{/* Positive order: place at top with low weight */}}
+        {{ $weight = $manualOrder }}
+      {{ end }}
+    {{ else }}
+      {{/* Assign weight based on directory name for main sections */}}
+      {{ $sectionWeights := dict
+        "getting-started" 1
+        "configuration" 2
+        "access-control" 3
+        "shares" 4
+        "integrations" 5
+        "user-guides" 6
+        "advanced" 7
+        "reference" 8
+        "contributing" 9
+        "help" 10
+      }}
+      {{ $weight = index $sectionWeights .File.Dir | default (index $sectionWeights .Section) | default 999 }}
+    {{ end }}
+
+    {{ $item := dict
       "Page" .
       "Weight" $weight
       "Type" "section"
       "Path" .File.Dir
+      "ManualOrder" $manualOrder
     }}
     {{ $allItems = $allItems | append $item }}
   {{ end }}
@@ -45,42 +59,86 @@ Usage: {{ partial "docs/auto-order.html" . }}
 {{ range $sortedItems }}
   {{ $page := .Page }}
   {{ $weight := .Weight }}
-  
+
   {{/* Process subsections and pages within this section */}}
   {{ $subItems := slice }}
-  
+
   {{/* Add subsections first */}}
   {{ range $page.Sections }}
     {{ $subWeight := 1 }}
-    {{ $subItem := dict 
+    {{ $subItem := dict
       "Page" .
       "Weight" $subWeight
       "Type" "subsection"
       "Path" .File.Dir
     }}
     {{ $subItems = $subItems | append $subItem }}
+    
+    {{/* Also process pages within this subsection */}}
+    {{ $currentSubsection := . }}
+    {{ range .Pages }}
+      {{ if not .IsSection }}
+        {{ $pageWeight := 2 }}
+        {{ $manualOrder := .Params.order }}
+
+        {{ if $manualOrder }}
+          {{ if lt $manualOrder 0 }}
+            {{/* Negative order: place at bottom with high weight */}}
+            {{ $pageWeight = sub 1000 (mul $manualOrder -1) }}
+          {{ else }}
+            {{/* Positive order: place at top with low weight */}}
+            {{ $pageWeight = $manualOrder }}
+          {{ end }}
+        {{ end }}
+
+        {{ $pageItem := dict
+          "Page" .
+          "Weight" $pageWeight
+          "Type" "page"
+          "Path" .File.Dir
+          "ManualOrder" $manualOrder
+          "ParentSection" $page
+          "ParentSubsection" $currentSubsection
+        }}
+        {{ $subItems = $subItems | append $pageItem }}
+      {{ end }}
+    {{ end }}
   {{ end }}
-  
-  {{/* Add pages */}}
+
+  {{/* Add pages with manual ordering support */}}
   {{ range $page.Pages }}
     {{ if not .IsSection }}
       {{ $pageWeight := 2 }}
-      {{ $pageItem := dict 
+      {{ $manualOrder := .Params.order }}
+
+      {{ if $manualOrder }}
+        {{ if lt $manualOrder 0 }}
+          {{/* Negative order: place at bottom with high weight */}}
+          {{ $pageWeight = sub 1000 (mul $manualOrder -1) }}
+        {{ else }}
+          {{/* Positive order: place at top with low weight */}}
+          {{ $pageWeight = $manualOrder }}
+        {{ end }}
+      {{ end }}
+
+      {{ $pageItem := dict
         "Page" .
         "Weight" $pageWeight
         "Type" "page"
         "Path" .File.Dir
+        "ManualOrder" $manualOrder
+        "ParentSection" $page
       }}
       {{ $subItems = $subItems | append $pageItem }}
     {{ end }}
   {{ end }}
-  
+
   {{/* Sort subsections and pages by weight, then by title */}}
   {{ $sortedSubItems := sort $subItems "Weight" "asc" }}
-  
+
   {{/* Add the main section */}}
   {{ $finalItems = $finalItems | append . }}
-  
+
   {{/* Add its subsections and pages */}}
   {{ range $sortedSubItems }}
     {{ $finalItems = $finalItems | append . }}

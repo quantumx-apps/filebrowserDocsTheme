@@ -1,0 +1,69 @@
+{{/*
+Sort items by custom order field, then by path
+Usage: {{ $sorted := partial "docs/sort-items.html" (dict "items" $items) }}
+
+Order field behavior:
+- Positive integers (1, 2, 3...): First, second, third in list
+- Zero or unset: Default sort order (by path)
+- Negative integers (-1, -2, -3...): Last, second to last, third to last
+*/}}
+
+{{ $items := .items }}
+{{ $positiveItems := slice }}
+{{ $zeroItems := slice }}
+{{ $negativeItems := slice }}
+
+{{/* Separate items into three groups based on order */}}
+{{ range $items }}
+    {{ $order := 0 }}
+    {{ if .Page }}
+        {{ $order = .Page.Params.order | default 0 }}
+    {{ end }}
+    
+    {{ if gt $order 0 }}
+        {{ $positiveItems = $positiveItems | append (dict "Item" . "Order" $order) }}
+    {{ else if lt $order 0 }}
+        {{ $negativeItems = $negativeItems | append (dict "Item" . "Order" $order) }}
+    {{ else }}
+        {{ $zeroItems = $zeroItems | append . }}
+    {{ end }}
+{{ end }}
+
+{{/* Sort positive items by order (ascending), then by path */}}
+{{ $sortedPositive := slice }}
+{{ if gt (len $positiveItems) 0 }}
+    {{ $sortedPositive = sort $positiveItems "Order" "asc" }}
+{{ end }}
+
+{{/* Sort zero items by path (default alphabetical) */}}
+{{ $sortedZero := slice }}
+{{ if gt (len $zeroItems) 0 }}
+    {{ $sortedZero = sort $zeroItems "Path" "asc" }}
+{{ end }}
+
+{{/* Sort negative items by order (descending = -1, -2, -3...) */}}
+{{ $sortedNegative := slice }}
+{{ if gt (len $negativeItems) 0 }}
+    {{ $sortedNegative = sort $negativeItems "Order" "desc" }}
+{{ end }}
+
+{{/* Combine all groups in the right order */}}
+{{ $result := slice }}
+
+{{/* Add positive items first */}}
+{{ range $sortedPositive }}
+    {{ $result = $result | append .Item }}
+{{ end }}
+
+{{/* Add zero/unset items in the middle */}}
+{{ range $sortedZero }}
+    {{ $result = $result | append . }}
+{{ end }}
+
+{{/* Add negative items last */}}
+{{ range $sortedNegative }}
+    {{ $result = $result | append .Item }}
+{{ end }}
+
+{{ return $result }}
+

@@ -20,23 +20,35 @@
             {{ $currentPage := . -}}
             {{ $section := $currentPage.Section -}}
             
+            <!-- DEBUG: Sidebar Icons Configuration -->
+            <li style="background: #f0f0f0; padding: 10px; margin: 5px; border: 1px solid #ccc;">
+                <strong>DEBUG INFO:</strong><br>
+                sidebarIcons param: {{ .Site.Params.docs.sidebarIcons }}<br>
+                sidebarIcons type: {{ printf "%T" .Site.Params.docs.sidebarIcons }}<br>
+                sidebarIcons eq true: {{ eq .Site.Params.docs.sidebarIcons true }}<br>
+                Site.Params.docs: {{ .Site.Params.docs }}<br>
+                <br>
+                <strong>TEST ICON (should always show):</strong><br>
+                <i class="material-icons me-2" style="color: red;">bug_report</i> Test Icon
+            </li>
+
             {{/* Define section order based on directory structure */}}
-            {{ $sectionOrder := slice 
-                "getting-started" 
-                "configuration" 
-                "access-control" 
-                "shares" 
-                "integrations" 
-                "user-guides" 
-                "advanced" 
-                "reference" 
-                "contributing" 
+            {{ $sectionOrder := slice
+                "getting-started"
+                "configuration"
+                "access-control"
+                "shares"
+                "integrations"
+                "user-guides"
+                "advanced"
+                "reference"
+                "contributing"
                 "help"
             }}
-            
+
             {{/* Get docs section */}}
             {{ $docsSection := .Site.GetPage "docs" }}
-            
+
             {{/* Sort sections by predefined order */}}
             {{ range $sectionOrder }}
                 {{ $sectionName := . }}
@@ -44,12 +56,14 @@
                 {{ if $sectionPage }}
                     {{ $active := in $currentPage.RelPermalink $sectionPage.RelPermalink }}
                     {{ $hasChildren := or $sectionPage.Sections $sectionPage.Pages }}
-                    
+
                     {{ if $hasChildren }}
                         <li class="sidebar-dropdown {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
                             <button class="btn">
                                 {{ if eq .Site.Params.docs.sidebarIcons true -}}
                                     <i class="material-icons me-2">{{- $sectionPage.Params.icon | default "notes" }}</i>
+                                {{ else }}
+                                    <!-- DEBUG: No icon rendered for {{ $sectionPage.Title }} -->
                                 {{ end }}
                                 {{- $sectionPage.Title }}
                             </button>
@@ -57,21 +71,21 @@
                                 <ul>
                                     {{/* Process subsections first, then pages */}}
                                     {{ $subItems := slice }}
-                                    
+
                                     {{/* Add subsections */}}
                                     {{ range $sectionPage.Sections }}
-                                        {{ $subItem := dict 
+                                        {{ $subItem := dict
                                             "Page" .
                                             "Type" "subsection"
                                             "Title" .Title
                                         }}
                                         {{ $subItems = $subItems | append $subItem }}
                                     {{ end }}
-                                    
+
                                     {{/* Add pages */}}
                                     {{ range $sectionPage.Pages }}
                                         {{ if not .IsSection }}
-                                            {{ $subItem := dict 
+                                            {{ $subItem := dict
                                                 "Page" .
                                                 "Type" "page"
                                                 "Title" .Title
@@ -79,21 +93,23 @@
                                             {{ $subItems = $subItems | append $subItem }}
                                         {{ end }}
                                     {{ end }}
-                                    
+
                                     {{/* Sort by type (subsections first), then by title */}}
                                     {{ $sortedSubItems := sort $subItems "Type" "asc" }}
                                     {{ $sortedSubItems = sort $sortedSubItems "Title" "asc" }}
-                                    
+
                                     {{ range $sortedSubItems }}
                                         {{ $subPage := .Page }}
                                         {{ $subActive := in $currentPage.RelPermalink $subPage.RelPermalink }}
-                                        
+
                                         {{ if eq .Type "subsection" }}
                                             {{/* Subsection with nested content */}}
                                             <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $subActive }}current active{{ end }}">
                                                 <button class="btn">
                                                     {{ if eq .Site.Params.docs.sidebarIcons true -}}
                                                         <i class="material-icons me-2">{{- $subPage.Params.icon | default "folder" }}</i>
+                                                    {{ else }}
+                                                        <!-- DEBUG: No nested icon rendered for {{ $subPage.Title }} -->
                                                     {{ end }}
                                                     {{- $subPage.Title }}
                                                 </button>
