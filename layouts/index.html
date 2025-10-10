@@ -6,7 +6,7 @@
         {{ $sectionTitle := (index $key) }}
         {{ $weight := string ($value.weight) }}
         {{ $template := string (replaceRE `( |-{1,})` "_" $value.template) }}
-        {{ with and $template $weight }}
+        {{ if and $template $weight (eq $value.enable true) }}
             {{ $map.SetInMap "wgtTpl" $sectionTitle (dict
             "weight" $weight
             "template" $template

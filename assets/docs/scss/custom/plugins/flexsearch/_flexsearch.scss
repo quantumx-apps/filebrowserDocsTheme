@@ -268,7 +268,7 @@ body.search-overlay-active .fixed-search-button {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 30em;
+        width: 100%;
         max-width: 90vw;
         margin: 0;
         padding: 0;
@@ -282,8 +282,6 @@ body.search-overlay-active .fixed-search-button {
         }
 
         @media (max-width: 768px) {
-            width: 12em;
-
             &.search-expanded {
                 width: 90vw;
             }

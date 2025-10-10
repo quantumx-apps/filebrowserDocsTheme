@@ -4,7 +4,7 @@
 <!-- social_list -->
 {{ $social_params := slice "github" "twitter" "instagram" "rss" }}
 {{ range $social_params }}
-    {{ if isset site.Params.social . }}
+    {{ if and site.Params.social (isset site.Params.social .) }}
         {{ $.Scratch.Add "social_list" (slice .) }}
     {{ end }}
 {{ end }}
@@ -47,7 +47,7 @@
                                             {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "toc-mobile.html") . -}}
                                         </div>
                                         {{ end -}}
-                                        <div class="docs-content col-12 {{ if .IsNode }}{{ else }}{{ if site.Params.docs.toc | default true }}{{ if and (ne .Params.toc false) (ne .TableOfContents "<nav id=\"TableOfContents\"></nav>") }}col-xl-9{{else}}{{end}}{{ else }}{{ end }}{{ end }} mt-0">
+                                        <div class="docs-content col-12 {{ if .IsNode }}{{ else }}{{ if site.Params.docs.toc | default true }}{{ if and (ne .Params.toc false) (ne .TableOfContents "<nav id=\"TableOfContents\"></nav>") }}{{else}}{{end}}{{ else }}{{ end }}{{ end }} mt-0">
                                             <div class="mb-0 d-flex">
                                                 {{ if site.Params.docs.titleIcon | default false }}
                                                 <i class="material-icons title-icon me-2">{{- .Params.icon | default "article" }}</i>
@@ -98,7 +98,7 @@
         {{ end }}
 
         <!-- FlexSearch Config -->
-        {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
+        {{ if or (not (and .Site.Params.flexsearch (isset .Site.Params.flexsearch "enabled"))) (and .Site.Params.flexsearch (eq .Site.Params.flexsearch.enabled true)) -}}
             {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
             {{ else }}
                 {{- partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "footer/flexsearch.html") . -}}

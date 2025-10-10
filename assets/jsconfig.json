@@ -1,0 +1,10 @@
+{
+ "compilerOptions": {
+  "baseUrl": ".",
+  "paths": {
+   "*": [
+    "../../../../go/pkg/mod/github.com/twbs/bootstrap@v5.3.3+incompatible/js/*"
+   ]
+  }
+ }
+}

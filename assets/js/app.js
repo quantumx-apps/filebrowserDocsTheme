@@ -18,13 +18,46 @@ window.addEventListener('scroll', (ev) => {
     windowScroll();
 })
 
-// Toggle menu
+// Toggle menu with localStorage persistence
 function toggleMenu() {
-    document.getElementById('isToggle').classList.toggle('open');
-    var isOpen = document.getElementById('navigation')
-    if (isOpen.style.display === "block") {
-        isOpen.style.display = "none";
+    const toggleButton = document.getElementById('isToggle');
+    const navigation = document.getElementById('navigation');
+
+    if (!toggleButton || !navigation) return;
+
+    toggleButton.classList.toggle('open');
+
+    if (navigation.style.display === "block") {
+        navigation.style.display = "none";
+        localStorage.setItem('menu-disabled', 'true');
     } else {
-        isOpen.style.display = "block";
+        navigation.style.display = "block";
+        localStorage.removeItem('menu-disabled'); // Remove key when enabled (default)
     }
-};
+}
+
+// Initialize menu state from localStorage
+function initMenuState() {
+    const navigation = document.getElementById('navigation');
+    const toggleButton = document.getElementById('isToggle');
+    
+    if (!navigation || !toggleButton) return;
+    
+    const isMenuDisabled = localStorage.getItem('menu-disabled') === 'true';
+    
+    // Set menu state based on localStorage
+    if (isMenuDisabled) {
+        // User previously disabled menu - keep it disabled
+        navigation.style.display = "none";
+        toggleButton.classList.remove('open');
+    } else {
+        // Default state - ensure menu is open
+        navigation.style.display = "block";
+        toggleButton.classList.add('open');
+    }
+}
+
+// Initialize menu state when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initMenuState();
+});
