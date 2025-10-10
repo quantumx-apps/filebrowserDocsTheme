@@ -123,53 +123,30 @@ function initSidebarState() {
     const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
     const closeSidebar = document.getElementById("close-sidebar");
     
-    console.log('🔍 Sidebar Debug - initSidebarState called');
-    console.log('pageWrapper:', pageWrapper);
-    console.log('closeSidebar:', closeSidebar);
-    
-    if (!pageWrapper || !closeSidebar) {
-        console.log('❌ Missing elements, returning early');
-        return;
-    }
+    if (!pageWrapper || !closeSidebar) return;
     
     // Get saved sidebar state from localStorage (default: enabled)
-    const savedState = localStorage.getItem('sidebar-disabled');
-    const isSidebarDisabled = savedState === 'true';
-    
-    console.log('📦 localStorage sidebar-disabled:', savedState);
-    console.log('🔍 isSidebarDisabled:', isSidebarDisabled);
-    console.log('🎯 Initial pageWrapper classes:', pageWrapper.className);
+    const isSidebarDisabled = localStorage.getItem('sidebar-disabled') === 'true';
     
     // Set sidebar state based on localStorage
     if (isSidebarDisabled) {
         // User previously disabled sidebar - remove toggled class to hide sidebar
         pageWrapper.classList.remove("toggled");
-        console.log('🔒 Applied disabled state from localStorage, classes now:', pageWrapper.className);
     } else {
         // Default state - ensure sidebar is enabled (keep toggled class)
         pageWrapper.classList.add("toggled");
-        console.log('🔓 Applied enabled state (default), classes now:', pageWrapper.className);
     }
     
     // Add click listener to toggle sidebar and save state
     closeSidebar.addEventListener("click", function () {
-        console.log('🖱️ Sidebar toggle clicked');
-        console.log('Before toggle - classes:', pageWrapper.className);
-        
         pageWrapper.classList.toggle("toggled");
-        
-        console.log('After toggle - classes:', pageWrapper.className);
         
         // Save current state to localStorage (store disabled state)
         const isCurrentlyDisabled = !pageWrapper.classList.contains("toggled");
-        console.log('isCurrentlyDisabled:', isCurrentlyDisabled);
-        
         if (isCurrentlyDisabled) {
             localStorage.setItem('sidebar-disabled', 'true');
-            console.log('💾 Saved disabled state to localStorage');
         } else {
             localStorage.removeItem('sidebar-disabled'); // Remove key when enabled (default)
-            console.log('🗑️ Removed disabled state from localStorage');
         }
     });
 }
