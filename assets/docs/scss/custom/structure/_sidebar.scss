@@ -431,7 +431,7 @@
         // Top header stays full-width - no position change
         .sidebar-wrapper {
             left: 0px;
-            @media  (max-width: 1199px) {
+            @media  (max-width: 1200px) {
                 left: -300px;
             }
         }
