@@ -118,72 +118,91 @@ function activateSidebarMenu() {
     }
 }
 
-// Sidebar state management with localStorage
+// Simplified Sidebar Management
+// Desktop (≥1200px): Sidebar shown by default, toggleable with localStorage persistence
+// Mobile (<1200px): Sidebar hidden by default, temporarily toggleable (no persistence)
+// 
+// CSS behavior: "toggled" class = VISIBLE on desktop, HIDDEN on mobile
+
 function initSidebarState() {
     const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
     const closeSidebar = document.getElementById("close-sidebar");
+    const sidebar = document.getElementById("sidebar");
     
     if (!pageWrapper || !closeSidebar) return;
     
-    // Get saved sidebar state from localStorage (default: enabled)
-    const isSidebarDisabled = localStorage.getItem('sidebar-disabled') === 'true';
+    const isDesktop = () => window.matchMedia('(min-width: 1200px)').matches;
     
-    // Set sidebar state based on localStorage
-    if (isSidebarDisabled) {
-        // User previously disabled sidebar - remove toggled class to hide sidebar
-        pageWrapper.classList.remove("toggled");
-    } else {
-        // Default state - ensure sidebar is enabled (keep toggled class)
-        pageWrapper.classList.add("toggled");
+    // Initialize sidebar state based on screen size
+    function setInitialState() {
+        if (isDesktop()) {
+            // Desktop: Check localStorage (default: shown with "toggled" class)
+            const sidebarHidden = localStorage.getItem('sidebar-hidden') === 'true';
+            if (sidebarHidden) {
+                pageWrapper.classList.remove("toggled"); // Remove = hidden on desktop
+            } else {
+                pageWrapper.classList.add("toggled"); // Add = visible on desktop
+            }
+        } else {
+            // Mobile: Always start hidden (add "toggled" = hidden on mobile)
+            pageWrapper.classList.add("toggled");
+        }
     }
     
-    // Add click listener to toggle sidebar and save state
-    closeSidebar.addEventListener("click", function () {
+    // Set initial state on load
+    setInitialState();
+    
+    // Handle window resize to adjust sidebar behavior
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            setInitialState();
+        }, 250);
+    });
+    
+    // Toggle sidebar on button click
+    closeSidebar.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent triggering outside click handler
         pageWrapper.classList.toggle("toggled");
         
-        // Save current state to localStorage (store disabled state)
-        const isCurrentlyDisabled = !pageWrapper.classList.contains("toggled");
-        if (isCurrentlyDisabled) {
-            localStorage.setItem('sidebar-disabled', 'true');
-        } else {
-            localStorage.removeItem('sidebar-disabled'); // Remove key when enabled (default)
+        // Only save state on desktop
+        if (isDesktop()) {
+            const isHidden = !pageWrapper.classList.contains("toggled");
+            if (isHidden) {
+                localStorage.setItem('sidebar-hidden', 'true');
+            } else {
+                localStorage.removeItem('sidebar-hidden');
+            }
         }
     });
-}
-
-// Initialize sidebar state when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initSidebarState();
-});
-
-// Close Sidebar (mobile)
-if (!window.matchMedia('(min-width: 1024px)').matches) {
-    if (document.getElementById("close-sidebar")) {
-        const closeSidebar = document.getElementById("close-sidebar");
-        const sidebar = document.getElementById("sidebar");
-        const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
-        const sidebarMenuLinks = Array.from(document.querySelectorAll(".sidebar-root-link,.sidebar-nested-link"));
-
-        // Function to close sidebar and save state
-        function closeSidebarAndSave() {
-            pageWrapper.classList.remove("toggled");
-            localStorage.setItem('sidebar-disabled', 'true');
-        }
-
-        // Close sidebar by clicking outside
-        document.addEventListener('click', function(elem) {
-            if (!closeSidebar.contains(elem.target) && !sidebar.contains(elem.target))
-                closeSidebarAndSave();
+    
+    // Mobile-only: Close sidebar when clicking outside
+    if (!isDesktop()) {
+        document.addEventListener('click', function(e) {
+            const isOutsideClick = !closeSidebar.contains(e.target) && 
+                                  sidebar && !sidebar.contains(e.target);
+            
+            // On mobile, NOT having "toggled" means sidebar is visible, so add it to hide
+            if (isOutsideClick && !pageWrapper.classList.contains("toggled")) {
+                pageWrapper.classList.add("toggled");
+            }
         });
-
-        // Close sidebar immediately when clicking sidebar menu item
+        
+        // Mobile-only: Close sidebar when clicking any menu link
+        const sidebarMenuLinks = document.querySelectorAll(".sidebar-root-link, .sidebar-nested-link");
         sidebarMenuLinks.forEach(menuLink => {
             menuLink.addEventListener("click", function () {
-                closeSidebarAndSave();
+                pageWrapper.classList.add("toggled"); // Add = hidden on mobile
             });
         });
     }
 }
+
+// Initialize sidebar when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initSidebarState();
+});
 
 // Clickable Menu
 if (document.getElementById("navigation")) {
