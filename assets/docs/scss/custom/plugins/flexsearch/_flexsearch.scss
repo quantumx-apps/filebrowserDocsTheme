@@ -57,6 +57,7 @@
         border-color: var(--surfaceSecondary, #3A4147);
 
         &.search-expanded {
+            min-height: 2.6em;
             background-color: var(--surfacePrimary, #20292F);
             border-color: white;
         }
