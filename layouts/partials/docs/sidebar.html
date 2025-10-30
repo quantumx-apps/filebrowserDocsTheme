@@ -5,9 +5,9 @@
             <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
                 {{ with .Site.Data.landing.hero.titleLogo }}
                     {{ if .icon }}
-                        <!-- Material Icon Logo -->
-                        <span style="display: inline-flex; align-items: center; height: 30px; line-height: 30px;">
-                            <i class="material-icons filled" style="font-size: 30px; color: {{ .iconColor | default "#2196F3" }};">{{ .icon }}</i>
+                        <!-- SVG Logo from static folder -->
+                        <span style="display: inline-flex; align-items: center; height: 45px; line-height: 45px;">
+                            <img src="{{ "logo.svg" | absURL }}" alt="Logo" style="height: 45px;">
                         </span>
                     {{ end }}
                 {{ end }}

@@ -30,15 +30,13 @@
 
             <div class="col-lg-6 col-md-6">
                 <div class="title-heading">
-                    {{ with .badge }}
-                    <span class="badge {{ if eq .pill true }}rounded-pill{{ end }} bg-{{ if eq .soft true }}soft-{{ else }}hard-{{ end }}{{ .color }} mb-1">{{ .text }}</span>
-                    {{ end }}
+                    <a href="https://github.com/gtsteffaniak/filebrowser/releases"> <img src="https://img.shields.io/github/v/release/gtsteffaniak/filebrowser.svg?include_prereleases" class="rounded-pill" alt="FileBrowser Quantum Version" ></a>
                     <h4 class="heading hero-title mt-0 mb-3">
                         {{ with .titleLogo }}
                             {{ if .icon }}
-                                <!-- Material Icon Logo -->
+                                <!-- SVG Logo from static folder -->
                                 <span style="display: inline-flex; align-items: center; height: {{ .iconSize | default "70px" }}; line-height: {{ .iconSize | default "70px" }};">
-                                    <i class="material-icons filled" style="font-size: {{ .iconSize | default "70px" }}; color: {{ .iconColor | default "#2196F3" }};">{{ .icon }}</i>
+                                    <img src="{{ "logo.svg" | absURL }}" alt="Logo" style="height: {{ .iconSize | default "70px" }};">
                                 </span>
                             {{ else if .filename }}
                                 <!-- Custom Image Logo -->

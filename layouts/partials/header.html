@@ -4,16 +4,16 @@
         <!-- Logo container-->
         <a class="logo" aria-label="Home" href='{{ relLangURL "" }}'>
             {{ if .Site.Params.logo.icon }}
-                <!-- Material Icon Logo -->
-                <i class="material-icons filled" style="font-size: {{ .Site.Params.logo.iconSize | default "40px" }}; color: {{ .Site.Params.logo.iconColor | default "#2196F3" }};">{{ .Site.Params.logo.icon }}</i>
+                <!-- SVG Logo from static folder -->
+                <img src="{{ "logo.svg" | absURL }}" alt="Logo" style="height: {{ .Site.Params.logo.iconSize | default "40px" }};">
             {{ else if .Site.Params.logo.path }}
                 <!-- Custom Image Logo -->
                 {{ with resources.Get .Site.Params.logo.path }}
                     {{ .Content | safeHTML }}
                 {{ end }}
             {{ else }}
-                <!-- Default: Blue folder icon (filled) -->
-                <i class="material-icons filled" style="font-size: 40px; color: #2196F3;">folder</i>
+                <!-- Default: SVG Logo from static folder -->
+                <img src="{{ "logo.svg" | absURL }}" alt="Logo" style="height: 40px;">
             {{ end }}
         </a>
         <!-- End Logo container-->
