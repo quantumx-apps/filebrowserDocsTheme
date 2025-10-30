@@ -76,8 +76,9 @@
 }
 
 .docs-toc {
+    backdrop-filter: saturate(180%) blur(5px);
     padding-top: 4em;
-    padding-left: 1rem;
+    padding-left: 0.6em;
     position: fixed;
     right: 0;
     top: 0;
