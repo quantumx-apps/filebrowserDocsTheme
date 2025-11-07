@@ -1,13 +1,557 @@
-/* Chroma CSS */
+/* Chroma Syntax Highlighting Colors */
 
-.docs-content .main-content code {
-    color: var(--text-default);
+.code-snippet {
+    position: relative;
+    margin: 1rem 0;
 }
 
-.docs-content .main-content pre {
-    background-color: var(--code-block-bg) !important;
-    code {
-        color: #f5fbff;
-        background: var(--code-block-bg);
+pre .chroma {
+    border-radius: 0.5em;
+}
+
+.highlight {
+    padding-right: 0 !important;
+}
+
+/* Code snippet toolbar */
+.lang-toolbar {
+    position: relative;
+    width: 100%;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--code-block-bg, #c9c9c9);
+    margin-bottom: -8px;
+    z-index: 2;
+}
+
+/* Dark mode toolbar */
+[data-dark-mode] .lang-toolbar {
+    background: #2e2e38;
+}
+
+.lang-toolbar__item {
+    font-size: 14px;
+    padding-inline: 0.4rem;
+    background-color: var(--code-block-bg, #c9c9c9);
+    color: var(--text-default, #333);
+    border: 0;
+    outline: none;
+    transition: border 0.2s 
+ease-in-out;
+    border-bottom: 1.5px solid #b0b0b0;
+    z-index: 2;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding-bottom: 0.5em;
+    transform: translateY(.7em);
+}
+
+/* Dark mode toolbar item */
+[data-dark-mode] .lang-toolbar__item {
+    background-color: #2e2e38;
+    color: #fff;
+    border-bottom: 1.5px solid #454554;
+}
+
+.lang-toolbar__item-active {
+    border-bottom: 1.5px solid #ff671d;
+}
+
+.code-clipboard {
+    margin: 0 0 0 auto;
+    color: var(--text-default, #333);
+}
+
+/* Dark mode clipboard */
+[data-dark-mode] .code-clipboard {
+    color: #fff;
+}
+
+.code-clipboard__button {
+    background: #454554;
+    border-radius: 4px;
+    border: none;
+    width: 90px;
+    height: 30px;
+    padding: 4px 12px;
+    gap: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s background;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+        background: #555565;
     }
+
+    &:active {
+        background: #656575;
+    }
+}
+
+/* Light mode copy button */
+:not([data-dark-mode]) .code-clipboard__button {
+    background: #b0b0b0;
+    color: #333;
+
+    &:hover {
+        background: #a0a0a0;
+    }
+
+    &:active {
+        background: #909090;
+    }
+}
+
+/* Dark mode copy button - darker */
+[data-dark-mode] .code-clipboard__button {
+    background: #2a2a35;
+    color: #fff;
+
+    &:hover {
+        background: #353540;
+    }
+
+    &:active {
+        background: #40404b;
+    }
+}
+
+.code-clipboard__icon {
+    font-size: 14px;
+    display: inline-block;
+}
+
+.lang-toolbar__border {
+    position: absolute;
+    width: calc(100% - 1em);
+    height: 1.5px;
+    background-color: #b0b0b0;
+    top: 46px;
+    z-index: 1;
+}
+
+/* Dark mode toolbar border */
+[data-dark-mode] .lang-toolbar__border {
+    background-color: #454554;
+}
+
+.code-snippet__content {
+    position: relative;
+}
+
+.code-snippet__content pre {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin: 0;
+    background: var(--code-block-bg, #c9c9c9);
+    color: #1a1a1a;
+    /* Dark black for light mode */
+    padding: 1rem;
+}
+
+/* Dark mode code snippet content */
+[data-dark-mode] .code-snippet__content pre {
+    background: #2e2e38;
+    color: #fff;
+}
+
+.chroma {
+    width: 100%;
+}
+
+/* Line number table - fixed layout for scrollable code */
+.chroma .lntable {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Line number column - fixed, doesn't scroll */
+.chroma .lntd:first-child {
+    width: 3.5em;
+    min-width: 3.5em;
+    max-width: 3.5em;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--code-block-bg, #c9c9c9);
+    vertical-align: top;
+    border-bottom-left-radius: 0.5em;
+}
+
+/* Dark mode line numbers */
+[data-dark-mode] .chroma .lntd:first-child {
+    background-color: #2e2e38;
+}
+
+/* Code column - scrollable */
+.chroma .lntd:last-child {
+    overflow-x: auto;
+    vertical-align: top;
+    width: 100%;
+    border-bottom-right-radius: 0.5em;
+}
+
+.chroma .lntd:last-child pre {
+    overflow-x: auto;
+    margin: 0;
+}
+
+/* Highlighted lines - softer Material Design color */
+.chroma .hl {
+    background-color: rgba(100, 181, 246, 0.2);
+    /* Material Blue 300 with transparency */
+}
+
+/* Light mode highlighted lines - darker for visibility */
+:not([data-dark-mode]) .chroma .hl {
+    background-color: rgba(100, 181, 246, 0.15);
+    /* Lighter blue for light mode */
+}
+
+/* Code line highlighting on click/hash */
+.chroma-line-highlighted,
+.chroma .line.chroma-line-highlighted,
+.chroma tr.chroma-line-highlighted {
+    background-color: rgba(100, 181, 246, 0.25) !important;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Light mode line highlighting */
+:not([data-dark-mode]) .chroma-line-highlighted,
+:not([data-dark-mode]) .chroma .line.chroma-line-highlighted,
+:not([data-dark-mode]) .chroma tr.chroma-line-highlighted {
+    background-color: rgba(100, 181, 246, 0.2) !important;
+}
+
+/* Dark mode line highlighting */
+[data-dark-mode] .chroma-line-highlighted,
+[data-dark-mode] .chroma .line.chroma-line-highlighted,
+[data-dark-mode] .chroma tr.chroma-line-highlighted {
+    background-color: rgba(100, 181, 246, 0.3) !important;
+}
+
+/* Keywords - control flow, declarations (dark mode default) */
+.chroma .k, .chroma .kc, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr, .chroma .kt, .chroma .kv {
+    color: #ff7b72;
+}
+
+/* Light mode keywords - darker for visibility */
+:not([data-dark-mode]) .chroma .k, :not([data-dark-mode]) .chroma .kc, :not([data-dark-mode]) .chroma .kd, :not([data-dark-mode]) .chroma .kn, :not([data-dark-mode]) .chroma .kp, :not([data-dark-mode]) .chroma .kr, :not([data-dark-mode]) .chroma .kt, :not([data-dark-mode]) .chroma .kv {
+    color: #d32f2f;
+    /* Material Red 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .k, [data-dark-mode] .chroma .kc, [data-dark-mode] .chroma .kd, [data-dark-mode] .chroma .kn, [data-dark-mode] .chroma .kp, [data-dark-mode] .chroma .kr, [data-dark-mode] .chroma .kt, [data-dark-mode] .chroma .kv {
+    color: #ff7b72;
+}
+
+/* Strings - all string types (dark mode default) */
+.chroma .s, .chroma .sa, .chroma .sb, .chroma .sc, .chroma .dl, .chroma .sd, .chroma .s2, .chroma .se, .chroma .sh, .chroma .si, .chroma .sx, .chroma .sr, .chroma .s1, .chroma .ss, .chroma .sx {
+    color: #a5d6ff;
+}
+
+/* Light mode strings - darker for visibility */
+:not([data-dark-mode]) .chroma .s, :not([data-dark-mode]) .chroma .sa, :not([data-dark-mode]) .chroma .sb, :not([data-dark-mode]) .chroma .sc, :not([data-dark-mode]) .chroma .dl, :not([data-dark-mode]) .chroma .sd, :not([data-dark-mode]) .chroma .s2, :not([data-dark-mode]) .chroma .se, :not([data-dark-mode]) .chroma .sh, :not([data-dark-mode]) .chroma .si, :not([data-dark-mode]) .chroma .sx, :not([data-dark-mode]) .chroma .sr, :not([data-dark-mode]) .chroma .s1, :not([data-dark-mode]) .chroma .ss, :not([data-dark-mode]) .chroma .sx {
+    color: #1976d2;
+    /* Material Blue 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .s, [data-dark-mode] .chroma .sa, [data-dark-mode] .chroma .sb, [data-dark-mode] .chroma .sc, [data-dark-mode] .chroma .dl, [data-dark-mode] .chroma .sd, [data-dark-mode] .chroma .s2, [data-dark-mode] .chroma .se, [data-dark-mode] .chroma .sh, [data-dark-mode] .chroma .si, [data-dark-mode] .chroma .sx, [data-dark-mode] .chroma .sr, [data-dark-mode] .chroma .s1, [data-dark-mode] .chroma .ss, [data-dark-mode] .chroma .sx {
+    color: #a5d6ff;
+}
+
+/* Comments - all comment types (dark mode default) */
+.chroma .c, .chroma .ch, .chroma .cm, .chroma .c1, .chroma .cs, .chroma .cp, .chroma .cpf {
+    color: #8b949e;
+    font-style: italic;
+}
+
+/* Light mode comments - darker for visibility */
+:not([data-dark-mode]) .chroma .c, :not([data-dark-mode]) .chroma .ch, :not([data-dark-mode]) .chroma .cm, :not([data-dark-mode]) .chroma .c1, :not([data-dark-mode]) .chroma .cs, :not([data-dark-mode]) .chroma .cp, :not([data-dark-mode]) .chroma .cpf {
+    color: #616161;
+    /* Material Gray 700 */
+    font-style: italic;
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .c, [data-dark-mode] .chroma .ch, [data-dark-mode] .chroma .cm, [data-dark-mode] .chroma .c1, [data-dark-mode] .chroma .cs, [data-dark-mode] .chroma .cp, [data-dark-mode] .chroma .cpf {
+    color: #8b949e;
+    font-style: italic;
+}
+
+/* Numbers - all numeric types (dark mode default) */
+.chroma .m, .chroma .mb, .chroma .mf, .chroma .mh, .chroma .mi, .chroma .il, .chroma .mo, .chroma .mx, .chroma .se {
+    color: #79c0ff;
+}
+
+/* Light mode numbers - darker for visibility */
+:not([data-dark-mode]) .chroma .m, :not([data-dark-mode]) .chroma .mb, :not([data-dark-mode]) .chroma .mf, :not([data-dark-mode]) .chroma .mh, :not([data-dark-mode]) .chroma .mi, :not([data-dark-mode]) .chroma .il, :not([data-dark-mode]) .chroma .mo, :not([data-dark-mode]) .chroma .mx, :not([data-dark-mode]) .chroma .se {
+    color: #f57c00;
+    /* Material Orange 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .m, [data-dark-mode] .chroma .mb, [data-dark-mode] .chroma .mf, [data-dark-mode] .chroma .mh, [data-dark-mode] .chroma .mi, [data-dark-mode] .chroma .il, [data-dark-mode] .chroma .mo, [data-dark-mode] .chroma .mx, [data-dark-mode] .chroma .se {
+    color: #79c0ff;
+}
+
+/* Functions - function names and method calls (dark mode default) */
+.chroma .nf, .chroma .fm {
+    color: #d2a8ff;
+}
+
+/* Light mode functions - darker for visibility */
+:not([data-dark-mode]) .chroma .nf, :not([data-dark-mode]) .chroma .fm {
+    color: #7b1fa2;
+    /* Material Purple 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .nf, [data-dark-mode] .chroma .fm {
+    color: #d2a8ff;
+}
+
+/* Types - classes, types, built-ins (dark mode default) */
+.chroma .nb, .chroma .bp, .chroma .nc, .chroma .no, .chroma .nd, .chroma .ni, .chroma .ne, .chroma .nl, .chroma .nn, .chroma .nv, .chroma .vc, .chroma .vg, .chroma .vi, .chroma .vm {
+    color: #79c0ff;
+}
+
+/* Light mode types - darker for visibility */
+:not([data-dark-mode]) .chroma .nb, :not([data-dark-mode]) .chroma .bp, :not([data-dark-mode]) .chroma .nc, :not([data-dark-mode]) .chroma .no, :not([data-dark-mode]) .chroma .nd, :not([data-dark-mode]) .chroma .ni, :not([data-dark-mode]) .chroma .ne, :not([data-dark-mode]) .chroma .nl, :not([data-dark-mode]) .chroma .nn, :not([data-dark-mode]) .chroma .nv, :not([data-dark-mode]) .chroma .vc, :not([data-dark-mode]) .chroma .vg, :not([data-dark-mode]) .chroma .vi, :not([data-dark-mode]) .chroma .vm {
+    color: #1976d2;
+    /* Material Blue 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .nb, [data-dark-mode] .chroma .bp, [data-dark-mode] .chroma .nc, [data-dark-mode] .chroma .no, [data-dark-mode] .chroma .nd, [data-dark-mode] .chroma .ni, [data-dark-mode] .chroma .ne, [data-dark-mode] .chroma .nl, [data-dark-mode] .chroma .nn, [data-dark-mode] .chroma .nv, [data-dark-mode] .chroma .vc, [data-dark-mode] .chroma .vg, [data-dark-mode] .chroma .vi, [data-dark-mode] .chroma .vm {
+    color: #79c0ff;
+}
+
+/* Operators - operators and punctuation (dark mode default) */
+.chroma .o, .chroma .ow {
+    color: #ff7b72;
+}
+
+/* Light mode operators - darker for visibility */
+:not([data-dark-mode]) .chroma .o, :not([data-dark-mode]) .chroma .ow {
+    color: #d32f2f;
+    /* Material Red 700 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .o, [data-dark-mode] .chroma .ow {
+    color: #ff7b72;
+}
+
+/* Punctuation - brackets, braces, etc (dark mode default) */
+.chroma .p {
+    color: #c9d1d9;
+}
+
+/* Light mode punctuation - darker for visibility */
+:not([data-dark-mode]) .chroma .p {
+    color: #424242;
+    /* Material Gray 800 */
+}
+
+/* Ensure dark mode keeps original colors */
+[data-dark-mode] .chroma .p {
+    color: #c9d1d9;
+}
+
+/* Attributes/Properties - HTML attributes, object properties (not YAML keys) */
+.chroma .na:not(code[class*="language-yaml"] .na):not(code[data-lang="yaml"] .na),
+.chroma .nx {
+    color: #79c0ff;
+}
+
+/* YAML anchors and aliases */
+.chroma .fm {
+    color: #d2a8ff;
+}
+
+/* YAML tags - this is actually YAML keys! */
+.chroma .nt {
+    color: #ff7b72;
+}
+
+/* YAML keys - Chroma uses .nt (name tag) for YAML keys (dark mode default) */
+.chroma code[class*="language-yaml"] .nt,
+.chroma code[data-lang="yaml"] .nt {
+    color: #64b5f6;
+    /* Material Blue 300 - lighter blue */
+    font-weight: 500;
+}
+
+/* Light mode YAML keys - darker for visibility */
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .nt,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .nt {
+    color: #1976d2;
+    /* Material Blue 700 */
+    font-weight: 500;
+}
+
+/* Ensure dark mode keeps original YAML key colors */
+[data-dark-mode] .chroma code[class*="language-yaml"] .nt,
+[data-dark-mode] .chroma code[data-lang="yaml"] .nt {
+    color: #64b5f6;
+    font-weight: 500;
+}
+
+/* Literals - boolean, null, etc */
+.chroma .l, .chroma .ld {
+    color: #79c0ff;
+}
+
+/* Error tokens */
+.chroma .err {
+    color: #f85149;
+    background-color: rgba(248, 81, 73, 0.1);
+}
+
+/* Generic emphasized/strong */
+.chroma .ge {
+    font-style: italic;
+}
+
+.chroma .gs {
+    font-weight: bold;
+}
+
+/* Generic underlined */
+.chroma .gu {
+    color: #8b949e;
+    text-decoration: underline;
+}
+
+/* Generic prompt */
+.chroma .gp {
+    color: #8b949e;
+    font-weight: bold;
+}
+
+/* Generic output */
+.chroma .go {
+    color: #8b949e;
+}
+
+/* Generic subheading */
+.chroma .gh {
+    color: #8b949e;
+    font-weight: bold;
+}
+
+/* Generic traceback */
+.chroma .gt {
+    color: #f85149;
+}
+
+/* YAML keys - Chroma uses .nt for YAML keys, already handled above */
+
+/* YAML values - ensure values are not highlighted as keys (dark mode default) */
+.chroma code[class*="language-yaml"] .s,
+.chroma code[data-lang="yaml"] .s {
+    color: #81c784;
+    /* Material Green 300 */
+}
+
+/* Light mode YAML strings - darker for visibility */
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .s,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .s {
+    color: #388e3c;
+    /* Material Green 700 */
+}
+
+/* Ensure dark mode keeps original YAML string colors */
+[data-dark-mode] .chroma code[class*="language-yaml"] .s,
+[data-dark-mode] .chroma code[data-lang="yaml"] .s {
+    color: #81c784;
+}
+
+.chroma code[class*="language-yaml"] .m,
+.chroma code[class*="language-yaml"] .mi,
+.chroma code[data-lang="yaml"] .m,
+.chroma code[data-lang="yaml"] .mi {
+    color: #ffb74d;
+    /* Material Orange 300 */
+}
+
+/* Light mode YAML numbers - darker for visibility */
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .m,
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .mi,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .m,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .mi {
+    color: #f57c00;
+    /* Material Orange 700 */
+}
+
+/* Ensure dark mode keeps original YAML number colors */
+[data-dark-mode] .chroma code[class*="language-yaml"] .m,
+[data-dark-mode] .chroma code[class*="language-yaml"] .mi,
+[data-dark-mode] .chroma code[data-lang="yaml"] .m,
+[data-dark-mode] .chroma code[data-lang="yaml"] .mi {
+    color: #ffb74d;
+}
+
+.chroma code[class*="language-yaml"] .l,
+.chroma code[class*="language-yaml"] .kc,
+.chroma code[data-lang="yaml"] .l,
+.chroma code[data-lang="yaml"] .kc {
+    color: #f06292;
+    /* Material Pink 300 */
+}
+
+/* Light mode YAML booleans - darker for visibility */
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .l,
+:not([data-dark-mode]) .chroma code[class*="language-yaml"] .kc,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .l,
+:not([data-dark-mode]) .chroma code[data-lang="yaml"] .kc {
+    color: #c2185b;
+    /* Material Pink 700 */
+}
+
+/* Ensure dark mode keeps original YAML boolean colors */
+[data-dark-mode] .chroma code[class*="language-yaml"] .l,
+[data-dark-mode] .chroma code[class*="language-yaml"] .kc,
+[data-dark-mode] .chroma code[data-lang="yaml"] .l,
+[data-dark-mode] .chroma code[data-lang="yaml"] .kc {
+    color: #f06292;
+}
+
+/* JSON keys - similar approach */
+.chroma code[class*="language-json"] .na,
+.chroma code[data-lang="json"] .na {
+    color: #a5d6ff;
+    font-weight: 500;
+}
+
+/* JSON values */
+.chroma code[class*="language-json"] .s,
+.chroma code[data-lang="json"] .s {
+    color: #a5d6ff;
+}
+
+.chroma code[class*="language-json"] .m,
+.chroma code[data-lang="json"] .m {
+    color: #79c0ff;
+}
+
+.chroma code[class*="language-json"] .l,
+.chroma code[data-lang="json"] .l {
+    color: #ff7b72;
 }
