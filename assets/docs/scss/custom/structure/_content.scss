@@ -14,7 +14,7 @@
     --ordered-list-color: var(--gray-800);
     --blockquote-border-color: var(--gray-300);
 
-    --code-block-bg: #212d63;
+    --code-block-bg: #dfdfdf; /* Darker gray for light mode */
     --inline-code-bg: var(--gray-100);
     --inline-code-border: 1px solid var(--gray-400);
 
@@ -40,16 +40,16 @@
 .docs-content {
     order: 1;
     padding-bottom: 1em;
-    width: calc(100% - 18em);
     @media (max-width: 1200px) {
         width: 100%;
+        padding-left: 0;
     }
+    padding-right: 19em
 }
 
 // Links
 .docs-content .main-content a {
     font-weight: 600;
-    color: var(--content-link-color);
     &:hover {
         text-decoration: underline 2px var(--primary-200);
         text-underline-offset: 2.5px !important;
@@ -124,8 +124,8 @@ i {
 
 @media (max-width: 1199px) {
     .docs-content {
-        padding-left: calc(var(--bs-gutter-x) * 1.05);
-        padding-right: calc(var(--bs-gutter-x) * 1.05);
+        padding-left: 0.5em;
+        padding-right: 0.5em;
 
         h2 {
             margin-bottom: 1rem;
@@ -220,23 +220,80 @@ i {
 
 // Code
 .docs-content .main-content div.highlight {
-    margin: 16px 0;
-    padding: $code-block-padding-top;
-    background: var(--code-block-bg);
-    border-radius: 0.5em;
+    margin: 0;
+    padding-right: 0;
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
     pre {
         padding: 0;
     }
 }
 
+// Code snippet styling
+.docs-content .main-content .code-snippet {
+    .highlight {
+        background: var(--code-block-bg);
+        border-bottom-left-radius: 0.5em;
+        border-bottom-right-radius: 0.5em;
+    }
+    pre {
+        background: var(--code-block-bg);
+        color: #1a1a1a; /* Dark black for light mode */
+        border-radius: 0;
+    }
+}
+
+/* Dark mode code snippet */
+[data-dark-mode] .docs-content .main-content .code-snippet {
+    .highlight {
+        background: #2e2e38;
+    }
+    pre {
+        background: #2e2e38;
+        color: #fff;
+    }
+}
+
 .docs-content .main-content code {
-    font-size: inherit;
-    // color: var(--text-default);
     font-weight: 400;
-    padding: 1px 2px;
-    background: var(--inline-code-bg);
-    border: var(--inline-code-border);
-    border-radius: 0.5em;
+    color: #454554;
+    background: #e6e6ea;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    word-wrap: break-word;
+}
+
+/* Dark mode inline code */
+[data-dark-mode] .docs-content .main-content code {
+    color: #c9d1d9;
+    background: #2e2e38;
+}
+
+/* Don't apply inline code styles to code inside pre, h1-h6 */
+.docs-content .main-content :not(h1, h2, h3, h4, h5, h6, pre) > code {
+    font-size: 0.8em;
+    line-height: 0.8em;
+    color: #454554;
+    background: #e6e6ea;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+}
+
+/* Dark mode inline code (not in pre, h1-h6) */
+[data-dark-mode] .docs-content .main-content :not(h1, h2, h3, h4, h5, h6, pre) > code {
+    color: #c9d1d9;
+    background: #2e2e38;
+}
+
+/* Reset code inside pre blocks */
+.docs-content .main-content pre code {
+    font-size: 0.8rem;
+    color: inherit;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    word-wrap: normal;
 }
 
 .docs-content .main-content pre {
@@ -269,10 +326,15 @@ i {
 
 // Chroma Highlighter CSS
 .docs-content .main-content td pre {
-
     code {
         overflow-x: unset !important;
     }
+}
+
+// Remove bottom padding from Chroma code blocks
+.docs-content .main-content .chroma pre {
+    border-radius: 0.5em;
+    padding-bottom: 0.25em;
 }
 
 .docs-content .main-content .alert ul {

@@ -40,11 +40,11 @@ function toggleMenu() {
 function initMenuState() {
     const navigation = document.getElementById('navigation');
     const toggleButton = document.getElementById('isToggle');
-    
+
     if (!navigation || !toggleButton) return;
-    
+
     const isMenuDisabled = localStorage.getItem('menu-disabled') === 'true';
-    
+
     // Set menu state based on localStorage
     if (isMenuDisabled) {
         // User previously disabled menu - keep it disabled
