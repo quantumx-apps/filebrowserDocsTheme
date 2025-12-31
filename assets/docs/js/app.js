@@ -6,6 +6,8 @@
    File Description: Main JS file of the docs template
 */
 
+// Configuration
+const SCROLL_HEADER_OFFSET_EM = 4; // Header offset in em units (adjust this to change scroll offset from top)
 
 /*********************************/
 /*         INDEX                 */
@@ -18,7 +20,6 @@
  *     06.  Active Sidebar Menu  *
  *     07.  ScrollSpy            *
  ================================*/
-
 
 // Menu
 // Toggle menu
@@ -121,18 +122,18 @@ function activateSidebarMenu() {
 // Simplified Sidebar Management
 // Desktop (≥1200px): Sidebar shown by default, toggleable with localStorage persistence
 // Mobile (<1200px): Sidebar hidden by default, temporarily toggleable (no persistence)
-// 
+//
 // CSS behavior: "toggled" class = VISIBLE on desktop, HIDDEN on mobile
 
 function initSidebarState() {
     const pageWrapper = document.getElementsByClassName("page-wrapper")[0];
     const closeSidebar = document.getElementById("close-sidebar");
     const sidebar = document.getElementById("sidebar");
-    
+
     if (!pageWrapper || !closeSidebar) return;
-    
+
     const isDesktop = () => window.matchMedia('(min-width: 1200px)').matches;
-    
+
     // Initialize sidebar state based on screen size
     function setInitialState() {
         if (isDesktop()) {
@@ -148,10 +149,10 @@ function initSidebarState() {
             pageWrapper.classList.add("toggled");
         }
     }
-    
+
     // Set initial state on load
     setInitialState();
-    
+
     // Handle window resize to adjust sidebar behavior
     let resizeTimer;
     window.addEventListener('resize', function() {
@@ -160,12 +161,12 @@ function initSidebarState() {
             setInitialState();
         }, 250);
     });
-    
+
     // Toggle sidebar on button click
     closeSidebar.addEventListener("click", function (e) {
         e.stopPropagation(); // Prevent triggering outside click handler
         pageWrapper.classList.toggle("toggled");
-        
+
         // Only save state on desktop
         if (isDesktop()) {
             const isHidden = !pageWrapper.classList.contains("toggled");
@@ -176,19 +177,19 @@ function initSidebarState() {
             }
         }
     });
-    
+
     // Mobile-only: Close sidebar when clicking outside
     if (!isDesktop()) {
         document.addEventListener('click', function(e) {
-            const isOutsideClick = !closeSidebar.contains(e.target) && 
+            const isOutsideClick = !closeSidebar.contains(e.target) &&
                                   sidebar && !sidebar.contains(e.target);
-            
+
             // On mobile, NOT having "toggled" means sidebar is visible, so add it to hide
             if (isOutsideClick && !pageWrapper.classList.contains("toggled")) {
                 pageWrapper.classList.add("toggled");
             }
         });
-        
+
         // Mobile-only: Close sidebar when clicking any menu link
         const sidebarMenuLinks = document.querySelectorAll(".sidebar-root-link, .sidebar-nested-link");
         sidebarMenuLinks.forEach(menuLink => {
@@ -221,14 +222,8 @@ if (document.getElementById("sidebar")) {
     var elements = document.getElementById("sidebar").getElementsByTagName("button");
     for (var i = 0, len = elements.length; i < len; i++) {
         elements[i].onclick = function (elem) {
-            // if(elem.target !== document.querySelectorAll("li.sidebar-dropdown.active > a")[0]){
-            //     document.querySelectorAll("li.sidebar-dropdown.active")[0]?.classList?.toggle("active");
-            //     document.querySelectorAll("div.sidebar-submenu.d-block")[0]?.classList?.toggle("d-block");
-            // }
-            // if(elem.target.getAttribute("href") === "javascript:void(0)") {
             elem.target.parentElement.classList.toggle("active");
             elem.target.nextElementSibling.classList.toggle("d-block");
-            // }
         }
     }
 }
@@ -463,66 +458,130 @@ function initTocScrollSpy() {
 
 // Initialize TOC scroll spy when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.__pendingHash) {
+        const scrollContainer = document.querySelector('.content-docs-wrapper');
+        if (scrollContainer) {
+            scrollContainer.scrollTop = 0;
+        } else {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        }
+    }
+
     initTocScrollSpy();
 
     // Handle hash-based scroll (used for both startup and TOC clicks)
-    function scrollToHash(hash, delay = 0) {
+    function scrollToHash(hash, delay = 0, isInitialLoad = false) {
         if (!hash) return;
 
         const targetElement = document.querySelector(hash);
-        if (targetElement) {
-            const scrollFunction = () => {
-                const scrollContainer = document.querySelector('.content-docs-wrapper');
-                // Convert 12em to pixels dynamically (2em higher than TOC detection)
-                const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-                const headerOffset = fontSize * 6; // 12em offset (scrolls higher)
+        if (!targetElement) return;
 
-                if (scrollContainer) {
-                    const elementTop = targetElement.getBoundingClientRect().top + scrollContainer.scrollTop;
-                    scrollContainer.scrollTo({
-                        top: elementTop - headerOffset,
-                        behavior: 'smooth'
+        const scrollFunction = () => {
+            const scrollContainer = document.querySelector('.content-docs-wrapper');
+            const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            const headerOffset = fontSize * SCROLL_HEADER_OFFSET_EM;
+
+            if (scrollContainer) {
+                if (isInitialLoad && scrollContainer.scrollTop > 0) {
+                    // Browser already scrolled - adjust from current position
+                    requestAnimationFrame(() => {
+                        const containerRect = scrollContainer.getBoundingClientRect();
+                        const elementRect = targetElement.getBoundingClientRect();
+                        const elementAbsoluteTop = scrollContainer.scrollTop + (elementRect.top - containerRect.top);
+                        scrollContainer.scrollTo({
+                            top: Math.max(0, elementAbsoluteTop - headerOffset),
+                            behavior: 'smooth'
+                        });
                     });
                 } else {
-                    // Fallback to window scroll
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                    // Calculate from current scroll position
+                    requestAnimationFrame(() => {
+                        if (isInitialLoad) {
+                            const containerRect = scrollContainer.getBoundingClientRect();
+                            const elementRect = targetElement.getBoundingClientRect();
+                            const elementTop = elementRect.top - containerRect.top;
+                            scrollContainer.scrollTo({
+                                top: Math.max(0, elementTop - headerOffset),
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            const elementTop = targetElement.getBoundingClientRect().top + scrollContainer.scrollTop;
+                            scrollContainer.scrollTo({
+                                top: Math.max(0, elementTop - headerOffset),
+                                behavior: 'smooth'
+                            });
+                        }
                     });
-                    // Adjust for header
-                    window.scrollBy(0, -headerOffset);
                 }
-            };
-
-            if (delay > 0) {
-                setTimeout(scrollFunction, delay);
             } else {
-                scrollFunction();
+                // Fallback to window scroll
+                if (isInitialLoad && window.scrollY > 0) {
+                    requestAnimationFrame(() => {
+                        const elementRect = targetElement.getBoundingClientRect();
+                        const elementAbsoluteTop = window.scrollY + elementRect.top;
+                        window.scrollTo({
+                            top: Math.max(0, elementAbsoluteTop - headerOffset),
+                            behavior: 'smooth'
+                        });
+                    });
+                } else {
+                    requestAnimationFrame(() => {
+                        const elementRect = targetElement.getBoundingClientRect();
+                        const elementTop = window.scrollY + elementRect.top;
+                        window.scrollTo({
+                            top: Math.max(0, elementTop - headerOffset),
+                            behavior: 'smooth'
+                        });
+                    });
+                }
             }
+        };
+
+        if (delay > 0) {
+            setTimeout(scrollFunction, delay);
+        } else {
+            scrollFunction();
         }
     }
 
     // Handle hash-based scroll on startup
     function handleHashScroll() {
-        const hash = window.location.hash;
+        const hash = window.__pendingHash || window.location.hash;
         if (hash) {
-            scrollToHash(hash, 100); // Small delay for page load
+            if (window.__pendingHash && window.location.hash !== hash) {
+                window.history.replaceState(null, null, window.location.href + hash);
+                delete window.__pendingHash;
+            }
+
+            const performScroll = () => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        scrollToHash(hash, 0, true);
+                    });
+                });
+            };
+
+            if (document.readyState === 'complete') {
+                performScroll();
+            } else {
+                window.addEventListener('load', performScroll, { once: true });
+            }
         }
     }
 
     // Intercept TOC link clicks to update hash and trigger scroll
     function handleTocClicks() {
         const tocLinks = document.querySelectorAll('#toc a, #toc-mobile a, #TableOfContents a');
-        
+
         tocLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
                 if (href && href.startsWith('#')) {
                     e.preventDefault(); // Prevent default anchor behavior
-                    
+
                     // Update the URL hash
                     window.history.pushState(null, null, href);
-                    
+
                     // Trigger our custom scroll function
                     scrollToHash(href);
                 }
@@ -534,17 +593,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleAnchorClicks() {
         const contentArea = document.querySelector('.main-content');
         if (!contentArea) return;
-        
+
         contentArea.addEventListener('click', function(e) {
             const link = e.target.closest('a[href^="#"]');
             if (link) {
                 const href = link.getAttribute('href');
                 if (href && href.startsWith('#')) {
                     e.preventDefault(); // Prevent default anchor behavior
-                    
+
                     // Update the URL hash
                     window.history.pushState(null, null, href);
-                    
+
                     // Trigger our custom scroll function
                     scrollToHash(href);
                 }
@@ -554,10 +613,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Run hash scroll on page load
     handleHashScroll();
-    
+
     // Set up TOC click handlers
     handleTocClicks();
-    
+
     // Set up anchor link click handlers
     handleAnchorClicks();
 
@@ -572,4 +631,238 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         });
     };
+
+    // Code snippet copy functionality
+    function initCodeSnippetCopy() {
+        const copyButtons = document.querySelectorAll('.code-clipboard__button[data-code-snippet]');
+        
+        copyButtons.forEach(button => {
+            let resetTimeout = null;
+            
+            button.addEventListener('click', function() {
+                const codeSnippet = this.closest('.code-snippet');
+                if (!codeSnippet) return;
+                
+                // Clear any existing timeout to prevent stuck "Copied!" state
+                if (resetTimeout) {
+                    clearTimeout(resetTimeout);
+                    resetTimeout = null;
+                }
+                
+                // Find the actual code element (not the line numbers)
+                // The actual code is in the second column (last lntd) or has a language class/data-lang
+                let codeElement = codeSnippet.querySelector('.lntd:last-child code');
+                
+                // Fallback: look for code with language class or data-lang attribute
+                if (!codeElement) {
+                    codeElement = codeSnippet.querySelector('code[class*="language-"], code[data-lang]');
+                }
+                
+                // Last fallback: get any code element
+                if (!codeElement) {
+                    codeElement = codeSnippet.querySelector('code');
+                }
+                
+                if (!codeElement) return;
+                
+                // Extract text content from the code element
+                // Get all text nodes, excluding line number links
+                let text = '';
+                
+                // Try to get lines from .line elements first (preserves blank lines correctly)
+                const lineElements = codeElement.querySelectorAll('.line');
+                if (lineElements.length > 0) {
+                    const lines = [];
+                    lineElements.forEach((lineEl) => {
+                        // Get the .cl span content within this line
+                        const clSpan = lineEl.querySelector('.cl');
+                        if (clSpan) {
+                            let lineText = clSpan.textContent || clSpan.innerText;
+                            // Remove trailing newlines/whitespace but preserve leading spaces (indentation)
+                            lineText = lineText.replace(/\s+$/g, '');
+                            lines.push(lineText);
+                        } else {
+                            // If no .cl span, check if line is empty (blank line)
+                            const lineText = lineEl.textContent || lineEl.innerText;
+                            if (lineText.trim() === '') {
+                                lines.push('');
+                            }
+                        }
+                    });
+                    // Join lines with single newline
+                    text = lines.join('\n');
+                } else {
+                    // Fallback: use .cl spans directly
+                    const codeLines = codeElement.querySelectorAll('.cl');
+                    if (codeLines.length > 0) {
+                        const lines = [];
+                        codeLines.forEach((line) => {
+                            let lineText = line.textContent || line.innerText;
+                            // Remove trailing whitespace but preserve leading spaces
+                            lineText = lineText.replace(/\s+$/g, '');
+                            lines.push(lineText);
+                        });
+                        text = lines.join('\n');
+                    } else {
+                        // Last fallback: get all text content and clean it
+                        text = codeElement.textContent || codeElement.innerText;
+                        // Remove line number patterns (numbers at start of lines)
+                        text = text.replace(/^\s*\d+\s*/gm, '');
+                        // Remove multiple consecutive blank lines (keep single blank lines, remove triple+)
+                        text = text.replace(/\n{3,}/g, '\n\n');
+                        // Clean up any remaining issues and trim
+                        text = text.trim();
+                    }
+                }
+                
+                // Get the text span and original text
+                const textSpan = this.querySelector('span');
+                const originalText = textSpan.textContent;
+                
+                // Copy to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        // Show feedback
+                        textSpan.textContent = 'Copied!';
+                        
+                        // Clear any existing timeout and set a new one
+                        if (resetTimeout) {
+                            clearTimeout(resetTimeout);
+                        }
+                        resetTimeout = setTimeout(() => {
+                            textSpan.textContent = originalText;
+                            resetTimeout = null;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    
+                    try {
+                        document.execCommand('copy');
+                        textSpan.textContent = 'Copied!';
+                        
+                        // Clear any existing timeout and set a new one
+                        if (resetTimeout) {
+                            clearTimeout(resetTimeout);
+                        }
+                        resetTimeout = setTimeout(() => {
+                            textSpan.textContent = originalText;
+                            resetTimeout = null;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Fallback copy failed: ', err);
+                    }
+                    
+                    document.body.removeChild(textArea);
+                }
+            });
+        });
+    }
+
+    // Initialize code snippet copy on page load
+    initCodeSnippetCopy();
+
+    // Code line highlighting functionality
+    function initCodeLineHighlighting() {
+        // Handle line number link clicks
+        const lineLinks = document.querySelectorAll('.lnlinks');
+        lineLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#hl-')) {
+                    // Don't prevent default - let the hash change happen
+                    // The hashchange event will handle highlighting
+                    setTimeout(() => {
+                        highlightCodeLine(href.substring(1));
+                    }, 100);
+                }
+            });
+        });
+
+        // Handle hash on page load and changes
+        function checkHashAndHighlight() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#hl-')) {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    highlightCodeLine(hash.substring(1));
+                }, 100);
+            } else {
+                // Clear highlights if hash doesn't match
+                clearCodeLineHighlights();
+            }
+        }
+
+        // Check hash on initial load (after a delay to ensure DOM is ready)
+        setTimeout(() => {
+            checkHashAndHighlight();
+        }, 300);
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', function() {
+            checkHashAndHighlight();
+        });
+    }
+
+    function highlightCodeLine(lineId) {
+        // Clear any existing highlights first
+        clearCodeLineHighlights();
+
+        // Find the line element
+        const lineElement = document.getElementById(lineId);
+        if (!lineElement) return;
+
+        // Find the parent line container - could be .line or tr (for table layout)
+        let lineContainer = lineElement.closest('.line');
+        if (!lineContainer) {
+            // If not found, try finding the table row
+            const lntSpan = lineElement.closest('.lnt');
+            if (lntSpan) {
+                const tableRow = lntSpan.closest('tr');
+                if (tableRow) {
+                    lineContainer = tableRow;
+                }
+            }
+        }
+
+        if (lineContainer) {
+            lineContainer.classList.add('chroma-line-highlighted');
+            
+            // Scroll the line into view with offset for header
+            const scrollContainer = document.querySelector('.content-docs-wrapper');
+            if (scrollContainer) {
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const elementRect = lineContainer.getBoundingClientRect();
+                const elementTop = scrollContainer.scrollTop + (elementRect.top - containerRect.top);
+                const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+                const headerOffset = fontSize * SCROLL_HEADER_OFFSET_EM;
+                
+                scrollContainer.scrollTo({
+                    top: Math.max(0, elementTop - headerOffset),
+                    behavior: 'smooth'
+                });
+            } else {
+                // Fallback to standard scrollIntoView
+                lineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    function clearCodeLineHighlights() {
+        const highlighted = document.querySelectorAll('.chroma-line-highlighted');
+        highlighted.forEach(el => {
+            el.classList.remove('chroma-line-highlighted');
+        });
+    }
+
+    // Initialize code line highlighting
+    initCodeLineHighlighting();
 });

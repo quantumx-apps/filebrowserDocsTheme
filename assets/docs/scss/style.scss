@@ -12,7 +12,7 @@ $font-family-sans-serif: {{ .Site.Params.sans_serif_font | default "'Roboto', sa
 $font-family-monospace:  {{ .Site.Params.mono_font | default "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" }};
 
 // Code Padding Variables
-$code-block-padding-top: {{ if eq .Site.Params.docs.prism true -}}0{{ else }}1.25rem 0 0 0{{ end }};
+$code-block-padding-top: 1.25rem 0 0 0;
 
 // Icon Fonts
 @import "custom/plugins/icons/google-material";
@@ -57,13 +57,8 @@ $code-block-padding-top: {{ if eq .Site.Params.docs.prism true -}}0{{ else }}1.2
 
 // Plugins
 
-// Prism / Chroma
-{{- if eq .Site.Params.docs.prism true }}
-@import {{ printf "'%s%s'" "custom/plugins/prism/themes/" (.Site.Params.docs.prismTheme | default "lotusdocs") }}; // current prism theme
-@import "custom/plugins/prism/prism";
-{{- else }}
+// Chroma Syntax Highlighting
 @import "custom/plugins/chroma/default";
-{{- end -}}
 
 // FlexSearch
 {{ if or (not (and .Site.Params.flexsearch (isset .Site.Params.flexsearch "enabled"))) (and .Site.Params.flexsearch (eq .Site.Params.flexsearch.enabled true)) -}}@import "custom/plugins/flexsearch/flexsearch";{{ end }}
