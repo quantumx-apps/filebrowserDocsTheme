@@ -10,16 +10,80 @@
     --table-hover-bg: rgba(255, 255, 255, 0.075);
 }
 
-// Default Table
-table {
-    td {
-        border-top: 1px solid var(--card-border-color);
+// Default Table - scoped to main content
+.docs-content .main-content {
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: var(--code-block-bg);
+        border-radius: 0.5em;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        
+        td, th {
+            padding: 0.75rem 1rem;
+            border-right: 1px solid var(--card-border-color);
+        }
+        
+        td {
+            border-top: 1px solid var(--card-border-color);
+        }
+        
+        td:last-child, th:last-child {
+            border-right: 0;
+        }
+        
+        thead {
+            background: var(--code-block-bg);
+            
+            th {
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.875rem;
+                color: var(--text-default);
+                border-bottom: 2px solid var(--card-border-color);
+            }
+        }
+        
+        tbody {
+            tr:last-child {
+                td {
+                    border-bottom: 0;
+                }
+            }
+        }
     }
+}
+
+// Ensure code block tables are not affected by default table styles
+.chroma table,
+.chroma .lntable,
+.highlight table,
+.code-snippet table,
+.highlight .lntable,
+.code-snippet .lntable {
+    background: transparent !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    margin-bottom: 0 !important;
+    
     td, th {
-        border-right: 1px solid var(--card-border-color);
+        padding: 0 !important;
+        border: none !important;
+        border-right: none !important;
+        border-top: none !important;
     }
-    td:last-child, th:last-child {
-        border-right: 0;
+    
+    thead {
+        background: transparent !important;
+        
+        th {
+            border-bottom: none !important;
+            text-transform: none !important;
+            font-weight: normal !important;
+            font-size: inherit !important;
+        }
     }
 }
 
