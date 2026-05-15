@@ -1,21 +1,46 @@
 {{ define "main" }}
+    {{- /* GitHub: https://github.com/org/repo/edit/branch/content/{lang}/{filePath} — matches markdown source paths */ -}}
+    {{- $suggestEditURL := "" -}}
+    {{- $repoURL := .Site.Params.docs.repoURL | default "" -}}
+    {{- if and $repoURL .File -}}
+        {{- $host := (urls.Parse $repoURL).Hostname | lower -}}
+        {{- if strings.Contains $host "github" -}}
+            {{- $branch := .Site.Params.docs.repoBranch | default "main" -}}
+            {{- $fp := replace .File.Path "\\" "/" | strings.TrimPrefix "/" -}}
+            {{- /* Lang matches content/{lang}/ (e.g. en, zh-cn) */ -}}
+            {{- $langSeg := .Site.Language.Lang -}}
+            {{- $contentPath := printf "content/%s/%s" $langSeg $fp -}}
+            {{- $suggestEditURL = printf "%s/edit/%s/%s" (strings.TrimSuffix "/" $repoURL) $branch $contentPath -}}
+        {{- end -}}
+    {{- end -}}
+
     <!-- Page metadata -->
-    {{ if or .Date .Lastmod }}
+    {{ if or .Date .Lastmod $suggestEditURL }}
     <div class="page-meta mb-4 p-3 rounded" style="background-color: var(--alert-default-bg, rgba(0,0,0,0.06)); color: var(--text-default, inherit);">
-        <div class="row">
+        <div class="page-meta__inner w-100">
             {{ if .Date }}
-            <div class="col-md-6">
-                <small style="color: inherit;">
-                    <span class="material-icons size-16 align-text-bottom me-1" style="color: inherit;">schedule</span>
-                    <strong>Published:</strong> {{ .Date.Format "January 2, 2006" }}
+            <div class="page-meta__item">
+                <small class="d-inline-flex align-items-center gap-1" style="color: inherit;">
+                    <span class="material-icons size-16 flex-shrink-0" style="color: inherit;" aria-hidden="true">schedule</span>
+                    <span><strong>Published:</strong> {{ .Date.Format "January 2, 2006" }}</span>
                 </small>
             </div>
             {{ end }}
             {{ if .Lastmod }}
-            <div class="col-md-6">
-                <small style="color: inherit;">
-                    <span class="material-icons size-16 align-text-bottom me-1" style="color: inherit;">update</span>
-                    <strong>Last updated:</strong> {{ .Lastmod.Format "January 2, 2006" }}
+            <div class="page-meta__item">
+                <small class="d-inline-flex align-items-center gap-1" style="color: inherit;">
+                    <span class="material-icons size-16 flex-shrink-0" style="color: inherit;" aria-hidden="true">update</span>
+                    <span><strong>Last updated:</strong> {{ .Lastmod.Format "January 2, 2006" }}</span>
+                </small>
+            </div>
+            {{ end }}
+            {{ if $suggestEditURL }}
+            <div class="page-meta__item page-meta__suggest-edit">
+                <small class="d-inline-flex align-items-center" style="color: inherit;">
+                    <a href="{{ $suggestEditURL }}" class="text-decoration-none d-inline-flex align-items-center gap-1" style="color: inherit;" rel="noopener noreferrer" target="_blank" title="Suggest an edit">
+                        <span class="material-icons size-16 flex-shrink-0" style="color: inherit;" aria-hidden="true">edit</span>
+                        <strong>Suggest an edit</strong>
+                    </a>
                 </small>
             </div>
             {{ end }}

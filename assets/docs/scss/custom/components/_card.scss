@@ -1,7 +1,8 @@
 //
 // _card.scss
 //
-//card
+// Bootstrap-style cards + docs Markdown pattern cards (.pattern-grid / .pattern-card)
+//
 :root {
     --card-title-color: var(--text-default);
     --card-text-color: var(--text-muted);
@@ -10,6 +11,20 @@
 [data-dark-mode] {
     --card-title-color: var(--text-default);
     --card-text-color: var(--gray-500);
+
+    // Docs content cards (access rules, sources, etc.)
+    .pattern-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--gray-700);
+    }
+
+    .rule-type-card__icon {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .rule-type-card:nth-child(2) .rule-type-card__icon {
+        color: #fb923c;
+    }
 }
 
 .card {
@@ -36,4 +51,131 @@
 .card-text {
     color: var(--card-text-color);
     font-weight: 500;
+}
+
+// --- Docs Markdown: pattern grids & cards (HTML in .md content) ---
+
+.pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5em;
+    margin: 2em 0;
+
+    &--dense {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    &--rule-types {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .pattern-card {
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+
+        &--rule-types {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.pattern-card {
+    padding: 1.5em;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    background: var(--surfaceSecondary);
+    margin: 1.25em 0;
+
+    &--wide {
+        grid-column: 1 / -1;
+    }
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+        color: var(--primary);
+        font-size: 1.1em;
+
+        &:not(:first-child) {
+            margin-top: 1.25em;
+        }
+    }
+
+    h4 {
+        margin-top: 0;
+        margin-bottom: 1em;
+        color: var(--primary);
+        font-size: 1.1em;
+    }
+
+    p {
+        margin: 0.5em 0 1em;
+        font-size: 0.9em;
+        color: var(--textSecondary);
+    }
+
+    ul,
+    ol {
+        margin: 0.5em 0 0;
+        padding-left: 1.25em;
+        font-size: 0.95em;
+        color: var(--textSecondary);
+    }
+
+    li + li {
+        margin-top: 0.35em;
+    }
+
+    pre {
+        margin: 1em 0 0;
+    }
+
+    strong {
+        color: var(--textPrimary);
+    }
+}
+
+.rule-type-card {
+    display: flex;
+    gap: 1em;
+    align-items: flex-start;
+
+    &__icon {
+        flex-shrink: 0;
+        width: 2.25rem;
+        height: 2.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--primary);
+        background: rgba(14, 165, 233, 0.15);
+        border: 1px solid rgba(14, 165, 233, 0.35);
+    }
+
+    &__body {
+        min-width: 0;
+
+        h3 {
+            margin-top: 0;
+        }
+    }
+
+    &:nth-child(2) .rule-type-card__icon {
+        color: #c2410c;
+        background: rgba(234, 88, 12, 0.12);
+        border-color: rgba(234, 88, 12, 0.35);
+    }
+
+    &:nth-child(3) .rule-type-card__icon {
+        color: #7c3aed;
+        background: rgba(124, 58, 237, 0.12);
+        border-color: rgba(124, 58, 237, 0.35);
+    }
 }

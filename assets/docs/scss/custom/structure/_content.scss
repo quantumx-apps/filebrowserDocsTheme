@@ -37,6 +37,35 @@
 
 }
 
+// Doc page: published / last updated / suggest edit — full-width row, space-between
+.page-meta .page-meta__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1000px;
+    margin-inline: auto;
+    gap: 0.75rem 1.25rem;
+
+    @media (min-width: 768px) {
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+}
+
+.page-meta .page-meta__item {
+    flex: 0 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.page-meta .page-meta__item .material-icons {
+    display: inline-block;
+    line-height: 1;
+}
+
 .docs-content {
     order: 1;
     padding-bottom: 1em;
@@ -357,11 +386,36 @@ i {
     margin-bottom: 1rem;
 }
 
-.docs-content .main-content h2,
+.docs-content .main-content h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
 .docs-content .main-content h3,
 .docs-content .main-content h4,
 .docs-content .main-content h5,
 .docs-content .main-content h6 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+// Markdown cards: don’t stack heading margin on top of card padding
+.docs-content .main-content .pattern-card > h2:first-child,
+.docs-content .main-content .pattern-card > h3:first-child,
+.docs-content .main-content .pattern-card > h4:first-child {
+    margin-top: 0;
+}
+
+.docs-content .main-content .pattern-card .rule-type-card__body > h3:first-child {
+    margin-top: 0;
+}
+
+.docs-content .main-content .pattern-card > h3:not(:first-child),
+.docs-content .main-content .pattern-card > h4:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.docs-content .main-content .pattern-card h3,
+.docs-content .main-content .pattern-card h4 {
+    margin-bottom: 0.5rem;
 }
