@@ -1,0 +1,35 @@
+//
+// Static prompt/dialog mock for docs (ported from FileBrowser Prompts.vue / base.css)
+//
+
+.prompt-mock {
+    background-color: var(--surfacePrimary);
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    border-radius: var(--borderRadius);
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.075),
+        0 2px 2px rgba(0, 0, 0, 0.075),
+        0 4px 4px rgba(0, 0, 0, 0.075),
+        0 8px 8px rgba(0, 0, 0, 0.075),
+        0 16px 16px rgba(0, 0, 0, 0.075);
+    padding: 1.25em 1.5em;
+    margin: 1.5em 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.prompt-mock p {
+    margin: 0.75em 0 0.35em;
+    color: var(--textPrimary);
+}
+
+.prompt-mock > p:first-child {
+    margin-top: 0;
+}
+
+[data-dark-mode] .prompt-mock {
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.15),
+        0 2px 2px rgba(0, 0, 0, 0.15),
+        0 4px 4px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,91 @@
+//
+// Form inputs (ported from FileBrowser _inputs.css)
+//
+
+.border-radius {
+    border-radius: var(--borderRadius);
+}
+
+.input {
+    box-sizing: border-box;
+    border-radius: var(--borderRadius);
+    padding: 0.5em 1em;
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    transition: border-color 0.2s ease;
+    margin: 0;
+    width: 100%;
+    min-height: 2.5em;
+    background: var(--background);
+    color: var(--textPrimary);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.input:hover {
+    border-color: color-mix(in srgb, var(--surfaceSecondary) 70%, var(--textPrimary));
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primaryColor);
+}
+
+.input:disabled {
+    cursor: not-allowed;
+    color: var(--textSecondary);
+    opacity: 0.75;
+}
+
+.input--textarea {
+    line-height: 1.15;
+    font-family: inherit;
+    min-height: 5em;
+    resize: vertical;
+}
+
+select.input {
+    appearance: auto;
+    cursor: pointer;
+}
+
+.form-flex-group {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+}
+
+.form-grow {
+    flex-grow: 1;
+    width: inherit;
+    min-width: 1em;
+}
+
+.flat-right,
+.input.flat-right,
+input.flat-right {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.flat-left,
+.input.flat-left,
+input.flat-left,
+select.flat-left {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left-width: 0;
+}
+
+.form-flex-group > .input.flat-right + select.flat-left,
+.form-flex-group > input.flat-right + select.flat-left {
+    border-left-width: 0;
+    flex: 0 1 auto;
+    min-width: 7em;
+}
+
+.prompt-mock .input:disabled,
+.prompt-mock select.input:disabled {
+    cursor: default;
+    opacity: 1;
+}

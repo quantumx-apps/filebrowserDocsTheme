@@ -1,0 +1,35 @@
+{{/*
+  Static toggle switch mock (FileBrowser ToggleSwitch visual).
+
+  Usage:
+  {{< fb-toggle name="Disable anonymous access" help="Only authenticated users can access the share." />}}
+  {{< fb-toggle name="Show Quick Download" checked="true" />}}
+*/}}
+
+{{- $name := .Get "name" -}}
+{{- $help := .Get "help" -}}
+{{- $checked := .Get "checked" -}}
+{{- $explicitId := .Get "id" -}}
+{{- $optionId := printf "share-option-%s" (anchorize ($explicitId | default $name)) -}}
+
+{{- if not $name -}}
+  {{- errorf "fb-toggle shortcode: 'name' parameter is required" -}}
+{{- end -}}
+
+<div class="fb-option" id="{{ $optionId }}">
+<div class="toggle-container item">
+  <div class="toggle-row toggle-row--value">
+    <div class="toggle-name-container">
+      <span class="toggle-name"><a href="#{{ $optionId }}" class="fb-option-link">{{ $name }}</a></span>
+    </div>
+    <label class="switch">
+      <input type="checkbox"{{ if $checked }} checked{{ end }} aria-label="{{ $name }}" />
+      <span class="slider round"></span>
+    </label>
+  </div>
+</div>
+{{- with $help -}}
+<p class="help-text">{{ . }}</p>
+{{- end -}}
+</div>
+{{ .Inner }}

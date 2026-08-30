@@ -1,0 +1,21 @@
+{{- $optionsRaw := .options -}}
+{{- $selected := .selected | default "" -}}
+{{- $flatLeft := .flatLeft | default false -}}
+{{- $compact := .compact | default false -}}
+{{- $options := split $optionsRaw "|" -}}
+<div class="expand-dropdown{{ if $flatLeft }} flat-left{{ end }}{{ if $compact }} form-compact{{ end }}" data-fb-dropdown>
+  <div class="expand-dropdown-anchor menu-panel border-radius">
+    <button type="button" class="action expand-dropdown-trigger" aria-expanded="false">
+      <span class="expand-dropdown-trigger-label">{{ $selected }}</span>
+      <i class="material-icons expand-dropdown-chevron" aria-hidden="true">expand_more</i>
+    </button>
+  </div>
+  <div class="expand-dropdown-body menu-panel border-radius" hidden>
+    <div class="menu-option-list" role="listbox">
+      {{- range $options -}}
+        {{- $opt := trim . " " -}}
+        <button type="button" class="action menu-option{{ if eq $opt $selected }} menu-option--selected{{ end }}" role="option" data-value="{{ $opt }}">{{ $opt }}</button>
+      {{- end -}}
+    </div>
+  </div>
+</div>

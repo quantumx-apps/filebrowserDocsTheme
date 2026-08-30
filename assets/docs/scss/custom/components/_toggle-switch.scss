@@ -1,0 +1,148 @@
+//
+// Toggle switch (ported from FileBrowser ToggleSwitch.vue)
+//
+
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.toggle-container--enforceable {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35em;
+    padding: 0.35em;
+    border-radius: var(--borderRadius);
+}
+
+.toggle-container--enforceable .toggle-row {
+    box-sizing: border-box;
+    min-height: 3.25em;
+    padding: 0.5em 1em;
+    transition: background-color 0.15s ease;
+}
+
+.toggle-container--enforceable .toggle-row:hover {
+    background-color: var(--surfaceSecondary);
+}
+
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.toggle-row--enforced .enforced-label {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0.75em;
+}
+
+.enforced-label {
+    cursor: pointer;
+    user-select: none;
+    font-size: 1rem;
+}
+
+.toggle-name-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+}
+
+.toggle-name {
+    color: var(--textPrimary);
+}
+
+.tooltip-info-icon {
+    font-size: 1.2rem;
+    cursor: help;
+    color: var(--textSecondary);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    padding-right: 4em;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+    background-color: gray;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 6px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primaryColor);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primaryColor);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 50px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.toggle-row--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-row--disabled .toggle-name {
+    color: #999;
+}
+
+.toggle-row--disabled .slider {
+    cursor: not-allowed;
+}
+
+.toggle-row--disabled input:disabled + .slider {
+    cursor: not-allowed;
+    background-color: #ccc;
+}
+
+.toggle-row--disabled input:disabled:checked + .slider {
+    background-color: #999;
+}
+
+// Static docs mock: toggles are interactive demos
+.prompt-mock .switch input + .slider {
+    cursor: pointer;
+}

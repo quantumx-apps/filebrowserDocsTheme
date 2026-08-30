@@ -1,0 +1,14 @@
+{{/*
+  Option index navigation for share docs pages.
+
+  Usage:
+  {{< fb-option-nav >}}
+  ## Basic
+  - [Share Duration](#share-option-share-duration)
+  - [Optional Password](#share-option-optional-password)
+  {{< /fb-option-nav >}}
+*/}}
+
+<div class="fb-option-nav">
+  {{ .Inner | .Page.RenderString (dict "display" "block") }}
+</div>

@@ -1,0 +1,12 @@
+{{/*
+  Prompt/dialog body mock wrapper.
+
+  Usage:
+  {{< fb-prompt-mock >}}
+  ... fields and toggles ...
+  {{< /fb-prompt-mock >}}
+*/}}
+
+<div class="prompt-mock">
+  {{ .Inner | .Page.RenderString (dict "display" "block") }}
+</div>
