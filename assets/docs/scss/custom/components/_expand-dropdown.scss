@@ -1,0 +1,350 @@
+//
+// ExpandDropdown (ported from FileBrowser ExpandDropdown.vue / MenuOptionList.vue)
+//
+
+.prompt-mock .expand-dropdown {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.prompt-mock .menu-panel {
+    background-color: var(--background);
+    padding: 0.5em;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 13em;
+    box-sizing: border-box;
+}
+
+.prompt-mock .expand-dropdown-anchor {
+    box-sizing: border-box;
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    box-shadow: var(--surfaceElevationShadow);
+    justify-content: center;
+    transition:
+        border-bottom-left-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-bottom-right-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-top-left-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-top-right-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-bottom-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-top-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.prompt-mock .expand-dropdown--open .expand-dropdown-anchor:not(.expand-upward) {
+    position: relative;
+    z-index: 1000;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-color: var(--background);
+}
+
+.prompt-mock .expand-dropdown--open .expand-dropdown-anchor.expand-upward {
+    position: relative;
+    z-index: 1000;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-top-color: var(--background);
+    border-bottom-color: var(--surfaceSecondary);
+}
+
+// Overlay panel is teleported to document.body (matches ExpandDropdown.vue Teleport)
+.expand-dropdown-overlay {
+    box-sizing: border-box;
+    background: transparent;
+    overflow: visible;
+    z-index: 1000;
+    min-width: 0;
+}
+
+.expand-dropdown-overlay .expand-dropdown-body.menu-panel {
+    min-width: 0;
+}
+
+.expand-dropdown-overlay.expand-upward {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.expand-dropdown-overlay .expand-dropdown-body {
+    box-sizing: border-box;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--background);
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    padding: 0 0.5em 0.5em;
+    justify-content: flex-start;
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+}
+
+.expand-dropdown-overlay .expand-dropdown-body:not(.expand-upward) {
+    margin-top: -2px;
+    border-width: 0 var(--borderWidth) var(--borderWidth);
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+.expand-dropdown-overlay .expand-dropdown-body.expand-upward {
+    margin-bottom: -2px;
+    border-width: var(--borderWidth) var(--borderWidth) 0;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-top: 0;
+    padding-top: 0.5em;
+    padding-bottom: 0;
+}
+
+.expand-dropdown-overlay .menu-option-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    gap: 0.1em;
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.expand-dropdown-overlay .menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0.5em;
+    color: var(--textPrimary);
+    font: inherit;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 0.35em;
+    transition: background-color 0.15s ease;
+}
+
+.expand-dropdown-overlay .menu-option:hover {
+    width: 98%;
+    margin-left: 1%;
+}
+
+.expand-dropdown-overlay .menu-option--selected {
+    background-color: rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+}
+
+[data-dark-mode] .expand-dropdown-overlay .menu-option--selected {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.expand-enter-active {
+    transition:
+        height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.expand-leave-active {
+    transition:
+        height 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.expand-enter,
+.expand-leave-to {
+    height: 0 !important;
+    opacity: 0;
+}
+
+.prompt-mock .expand-dropdown-body {
+    box-sizing: border-box;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--background);
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    padding: 0 0.5em 0.5em;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.prompt-mock .expand-dropdown-body:not(.expand-upward) {
+    margin-top: -2px;
+    border-width: 0 var(--borderWidth) var(--borderWidth);
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+.prompt-mock .expand-dropdown-body.expand-upward {
+    margin-bottom: -2px;
+    border-width: var(--borderWidth) var(--borderWidth) 0;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-top: 0;
+    padding-top: 0.5em;
+    padding-bottom: 0;
+}
+
+.prompt-mock .expand-dropdown-body[hidden] {
+    display: none;
+}
+
+.prompt-mock .expand-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5em;
+    padding-left: 0.5em;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: var(--textPrimary);
+}
+
+.prompt-mock .expand-dropdown-trigger:hover:not(:disabled) {
+    width: 98%;
+    margin-left: 1%;
+}
+
+.prompt-mock .expand-dropdown-trigger-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--textPrimary);
+}
+
+.prompt-mock .expand-dropdown-chevron {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--textSecondary);
+    transform: rotate(0deg);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.prompt-mock .expand-dropdown--open .expand-dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.prompt-mock .expand-enter-active {
+    transition:
+        height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.prompt-mock .expand-leave-active {
+    transition:
+        height 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.prompt-mock .expand-enter,
+.prompt-mock .expand-leave-to {
+    height: 0 !important;
+    opacity: 0;
+}
+
+.prompt-mock .menu-option-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    gap: 0.1em;
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.prompt-mock .menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0.5em;
+    color: var(--textPrimary);
+    font: inherit;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 0.35em;
+    transition: background-color 0.15s ease;
+}
+
+.prompt-mock .menu-option:hover {
+    width: 98%;
+    margin-left: 1%;
+}
+
+.prompt-mock .menu-option--selected {
+    background-color: rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+}
+
+[data-dark-mode] .prompt-mock .menu-option--selected {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.prompt-mock .expand-dropdown.form-compact {
+    width: auto;
+    min-width: 0;
+    flex: 0 1 auto;
+}
+
+.prompt-mock .expand-dropdown.form-compact .expand-dropdown-anchor {
+    padding: 0;
+    min-height: 2.5em;
+    box-shadow: none;
+}
+
+.prompt-mock .expand-dropdown.form-compact .expand-dropdown-trigger {
+    min-height: 2.5em;
+    padding: 0.5em 0.75em;
+    box-sizing: border-box;
+}
+
+.prompt-mock .expand-dropdown.form-compact .expand-dropdown-trigger i,
+.prompt-mock .expand-dropdown.form-compact .expand-dropdown-chevron {
+    padding: 0;
+    line-height: 1;
+}
+
+.prompt-mock .expand-dropdown.flat-left .expand-dropdown-anchor {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left-width: 0;
+}
+
+.prompt-mock .expand-dropdown.flat-right .expand-dropdown-anchor {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right-width: 0;
+}
+
+.prompt-mock .expand-dropdown.flat-left.flat-right .expand-dropdown-anchor {
+    border-radius: 0 !important;
+}
+
+.prompt-mock .expand-dropdown.flat-left .expand-dropdown-anchor,
+.prompt-mock .expand-dropdown.flat-right .expand-dropdown-anchor {
+    box-shadow: none;
+}
+
+.prompt-mock .expand-dropdown.flat-left.expand-dropdown--open .expand-dropdown-anchor {
+    border-top-left-radius: 0 !important;
+}
+
+.prompt-mock .expand-dropdown.flat-right.expand-dropdown--open .expand-dropdown-anchor {
+    border-top-right-radius: 0 !important;
+}
+
+.prompt-mock .form-flex-group > .input.flat-right + .expand-dropdown.flat-left .expand-dropdown-anchor {
+    border-left-width: 0;
+}

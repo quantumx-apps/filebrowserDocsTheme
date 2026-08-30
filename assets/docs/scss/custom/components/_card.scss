@@ -84,9 +84,9 @@
 
 .pattern-card {
     padding: 1.5em;
-    border: 1px solid var(--gray-300);
-    border-radius: 8px;
-    background: var(--surfaceSecondary);
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    border-radius: var(--borderRadius);
+    background: var(--surfacePrimary);
     margin: 1.25em 0;
 
     &--wide {
@@ -154,9 +154,9 @@
         font-size: 1.15rem;
         font-weight: 700;
         line-height: 1;
-        color: var(--primary);
-        background: rgba(14, 165, 233, 0.15);
-        border: 1px solid rgba(14, 165, 233, 0.35);
+        color: var(--primaryColor);
+        background: rgba(33, 150, 243, 0.15);
+        border: 1px solid rgba(33, 150, 243, 0.35);
     }
 
     &__body {

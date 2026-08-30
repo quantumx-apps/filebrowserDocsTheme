@@ -1,0 +1,98 @@
+//
+// Docs example / use-case cards (shares pages, customization, etc.)
+//
+
+.example-card {
+    margin: 2em 0;
+    padding: 1.5em;
+    border: var(--borderWidth) solid var(--surfaceSecondary);
+    border-radius: var(--borderRadius);
+    background: var(--surfacePrimary);
+}
+
+.example-card h4 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    color: var(--primaryColor);
+    font-size: 1.1em;
+}
+
+.example-field {
+    margin: 1em 0;
+    padding: 0.5em 0;
+}
+
+.example-field strong {
+    display: inline-block;
+    min-width: 120px;
+    color: var(--textPrimary);
+}
+
+.example-field ul {
+    margin: 0.5em 0 0;
+    padding-left: 1.5em;
+}
+
+.example-field pre {
+    margin: 0.5em 0 0;
+}
+
+.color-preview {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--surfaceSecondary);
+    vertical-align: middle;
+    margin-left: 0.5em;
+}
+
+.unavailable-options {
+    margin: 1.5em 0;
+    padding: 1.5em;
+    background: rgba(244, 67, 54, 0.05);
+    border-left: 3px solid var(--red);
+    border-radius: var(--borderRadius);
+}
+
+.unavailable-options ul {
+    margin: 0;
+    padding-left: 1.5em;
+}
+
+.use-case {
+    margin: 1em 0;
+    padding: 1em;
+    background: rgba(33, 150, 243, 0.06);
+    border-left: 3px solid var(--primaryColor);
+    border-radius: var(--borderRadius);
+}
+
+.best-practice {
+    margin: 1em 0;
+    padding: 1em;
+    background: rgba(76, 175, 80, 0.05);
+    border-left: 3px solid var(--green-500);
+    border-radius: var(--borderRadius);
+}
+
+[data-dark-mode] .example-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--gray-700);
+}
+
+[data-dark-mode] .unavailable-options {
+    background: rgba(244, 67, 54, 0.1);
+}
+
+[data-dark-mode] .use-case {
+    background: rgba(33, 150, 243, 0.08);
+}
+
+[data-dark-mode] .best-practice {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+[data-dark-mode] .color-preview {
+    border-color: var(--gray-600);
+}

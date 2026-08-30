@@ -1,0 +1,17 @@
+{{/*
+  Always-visible advanced settings section for share prompt mocks.
+
+  Usage:
+  {{< fb-settings-group >}}
+  ... toggles and fields ...
+  {{< /fb-settings-group >}}
+*/}}
+
+{{- $title := .Get "title" | default "Advanced options" -}}
+
+<section class="fb-settings-group">
+  <h3 class="fb-settings-group__title">{{ $title }}</h3>
+  <div class="settings-content settings-items">
+    {{ .Inner | .Page.RenderString (dict "display" "block") }}
+  </div>
+</section>

@@ -1,0 +1,44 @@
+{{/*
+  Static form field mock (FileBrowser prompt input style).
+
+  Usage:
+  {{< fb-field label="Optional Password" type="password" help="..." />}}
+  {{< fb-field label="Share Type" type="select" options="Normal|Upload only" selected="Normal" help="..." />}}
+  {{< fb-field label="Share Duration" type="duration" help="..." />}}
+*/}}
+
+{{- $label := .Get "label" -}}
+{{- $type := .Get "type" | default "text" -}}
+{{- $help := .Get "help" -}}
+{{- $placeholder := .Get "placeholder" -}}
+{{- $options := .Get "options" -}}
+{{- $selected := .Get "selected" -}}
+{{- $explicitId := .Get "id" -}}
+{{- $slugSource := $explicitId | default $label | default $placeholder -}}
+{{- $optionId := printf "share-option-%s" (anchorize $slugSource) -}}
+
+<div class="fb-option" id="{{ $optionId }}">
+{{- if $label -}}
+<p class="fb-field-label"><a href="#{{ $optionId }}" class="fb-option-link">{{ $label }}</a></p>
+{{- end -}}
+
+{{- if eq $type "duration" -}}
+<div class="form-flex-group">
+  <input class="input form-grow flat-right" type="number" placeholder="{{ $placeholder | default "0" }}" />
+  {{ partial "docs/fb-expand-dropdown.html" (dict "options" "minutes|hours|days" "selected" "minutes" "flatLeft" true "compact" true) }}
+</div>
+{{- else if eq $type "select" -}}
+  {{ partial "docs/fb-expand-dropdown.html" (dict "options" $options "selected" $selected) }}
+{{- else if eq $type "textarea" -}}
+<textarea class="input input--textarea" placeholder="{{ $placeholder }}"></textarea>
+{{- else -}}
+<input class="input" type="{{ $type }}" placeholder="{{ $placeholder }}" />
+{{- end -}}
+
+{{- with $help -}}
+<p class="help-text">{{ . }}</p>
+{{- end -}}
+</div>
+{{- with .Inner -}}
+{{ . }}
+{{- end -}}

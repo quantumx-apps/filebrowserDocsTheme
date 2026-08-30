@@ -8,6 +8,87 @@
 
 // Configuration
 const SCROLL_HEADER_OFFSET_EM = 4; // Header offset in em units (adjust this to change scroll offset from top)
+const FB_ANCHOR_FLASH_MS = 2600;
+
+function clearAnchorFlash() {
+    document.querySelectorAll('.fb-anchor-flash').forEach((el) => {
+        el.classList.remove('fb-anchor-flash');
+    });
+}
+
+function flashAnchorTarget(hash) {
+    if (!hash) return;
+    clearAnchorFlash();
+    const target = document.querySelector(hash);
+    if (!target) return;
+    target.classList.add('fb-anchor-flash');
+    window.setTimeout(() => {
+        target.classList.remove('fb-anchor-flash');
+    }, FB_ANCHOR_FLASH_MS);
+}
+
+function isAnchorInView(target, scrollContainer, headerOffset) {
+    const rect = target.getBoundingClientRect();
+    if (scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        return (
+            rect.top >= containerRect.top + headerOffset - 4 &&
+            rect.top <= containerRect.bottom - 24 &&
+            rect.bottom > containerRect.top + headerOffset
+        );
+    }
+    return (
+        rect.top >= headerOffset - 4 &&
+        rect.top <= window.innerHeight - 24 &&
+        rect.bottom > headerOffset
+    );
+}
+
+function scheduleAnchorFlashAfterScroll(hash, scrollContainer) {
+    const target = document.querySelector(hash);
+    if (!target) return;
+
+    clearAnchorFlash();
+
+    const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const headerOffset = fontSize * SCROLL_HEADER_OFFSET_EM;
+    const scrollEl = scrollContainer || window;
+    let pending = true;
+
+    const flash = () => {
+        if (!pending) return;
+        pending = false;
+        scrollEl.removeEventListener('scroll', onScroll);
+        scrollEl.removeEventListener('scrollend', onScrollEnd);
+        flashAnchorTarget(hash);
+    };
+
+    const tryFlash = () => {
+        if (!pending) return;
+        if (isAnchorInView(target, scrollContainer, headerOffset)) {
+            requestAnimationFrame(flash);
+        }
+    };
+
+    const onScroll = () => tryFlash();
+    const onScrollEnd = () => tryFlash();
+
+    if (isAnchorInView(target, scrollContainer, headerOffset)) {
+        requestAnimationFrame(() => requestAnimationFrame(flash));
+        return;
+    }
+
+    scrollEl.addEventListener('scroll', onScroll, { passive: true });
+    if ('onscrollend' in window) {
+        scrollEl.addEventListener('scrollend', onScrollEnd, { once: true });
+    }
+
+    window.setTimeout(() => {
+        if (pending) {
+            flash();
+        }
+    }, 2000);
+}
 
 /*********************************/
 /*         INDEX                 */
@@ -535,6 +616,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             }
+
+            scheduleAnchorFlashAfterScroll(hash, scrollContainer);
         };
 
         if (delay > 0) {
